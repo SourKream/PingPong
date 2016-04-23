@@ -69,6 +69,8 @@ public class Board extends JPanel implements Commons {
 
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
+        
+        drawCorners(g2d);
 
         if (ingame) {
             
@@ -87,6 +89,9 @@ public class Board extends JPanel implements Commons {
                 ball.getWidth(), ball.getHeight(), this);
         g2d.drawImage(paddle.getImage(), paddle.getX(), paddle.getY(),
                 paddle.getWidth(), paddle.getHeight(), this);
+    }
+    
+    private void drawCorners(Graphics2D g2d) {
         
         for(int i = 0; i< 4; i++)
         {
@@ -94,6 +99,8 @@ public class Board extends JPanel implements Commons {
         	g2d.fill(corner[i].getCorner());
         }
     }
+    
+    
     
     private void gameFinished(Graphics2D g2d) {
 
