@@ -28,7 +28,7 @@ public class Ball extends Sprite implements Commons {
             setXDir(1);
         }
 
-        if (x == WIDTH - i_width-12) {
+        if (x == WIDTH - i_width - 12) {
             setXDir(-1);
         }
 

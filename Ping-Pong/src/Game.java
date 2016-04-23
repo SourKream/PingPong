@@ -25,7 +25,7 @@ public class Game extends JFrame {
         setTitle("Ping Pong");
         
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(Commons.WIDTH, Commons.HEIGTH);
+        setSize(Commons.WIDTH, Commons.HEIGHT+22);
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
