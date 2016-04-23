@@ -24,15 +24,15 @@ public class Ball extends Sprite implements Commons {
         x += xdir;
         y += ydir;
 
-        if (x == 12) {
+        if (x == BORDER) {
             setXDir(1);
         }
 
-        if (x == WIDTH - i_width - 12) {
+        if (x == WIDTH - i_width - BORDER) {
             setXDir(-1);
         }
 
-        if (y == 12) {
+        if (y == BORDER) {
             setYDir(1);
         }
     }
@@ -53,5 +53,16 @@ public class Ball extends Sprite implements Commons {
 
     public int getYDir() {
         return ydir;
+    }
+    
+    public int getXDir() {
+        return xdir;
+    }
+    
+    public void setPositionAndHeading (int x, int y, int xdir, int ydir){
+    	setX(x);
+    	setY(y);
+    	this.xdir = xdir;
+    	this.ydir = ydir;
     }
 }

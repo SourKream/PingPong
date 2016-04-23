@@ -18,7 +18,7 @@ public class Board extends JPanel implements Commons {
     private Timer timer;
     private String message = "Game Over";
     private Ball ball;
-    private Paddle paddle;
+    private Player players[];
     private Corners corner[];
     private boolean ingame = true;
 
@@ -54,8 +54,12 @@ public class Board extends JPanel implements Commons {
     private void gameInit() {
 
         ball = new Ball();
-        paddle = new Paddle();
-
+        players = new Player[4];
+        for (int i=0; i<4; i++)
+        	players[i] = new Player(i+1);
+        players[2].reduceLife();
+        players[2].reduceLife();
+        players[2].reduceLife();
     }
 
     @Override
@@ -87,8 +91,12 @@ public class Board extends JPanel implements Commons {
         
         g2d.drawImage(ball.getImage(), ball.getX(), ball.getY(),
                 ball.getWidth(), ball.getHeight(), this);
-        g2d.drawImage(paddle.getImage(), paddle.getX(), paddle.getY(),
-                paddle.getWidth(), paddle.getHeight(), this);
+        
+        for (int i=0; i<players.length; i++){
+        	if (players[i].isAlive())
+	            g2d.drawImage(players[i].paddle.getImage(), players[i].paddle.getX(), players[i].paddle.getY(),
+	            		players[i].paddle.getWidth(), players[i].paddle.getHeight(), this);
+        }
     }
     
     private void drawCorners(Graphics2D g2d) {
@@ -99,8 +107,6 @@ public class Board extends JPanel implements Commons {
         	g2d.fill(corner[i].getCorner());
         }
     }
-    
-    
     
     private void gameFinished(Graphics2D g2d) {
 
@@ -118,12 +124,12 @@ public class Board extends JPanel implements Commons {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            paddle.keyReleased(e);
+            players[0].paddle.keyReleased(e);
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
-            paddle.keyPressed(e);
+            players[0].paddle.keyPressed(e);
         }
     }
 
@@ -133,7 +139,7 @@ public class Board extends JPanel implements Commons {
         public void run() {
 
             ball.move();
-            paddle.move();
+            players[0].paddle.move();
             checkCollision();
             repaint();
         }
@@ -152,41 +158,11 @@ public class Board extends JPanel implements Commons {
             stopGame();
         }
         
-        if ((ball.getRect()).intersects(paddle.getRect())) {
-
-            int paddleLPos = (int) paddle.getRect().getMinX();
-            int ballLPos = (int) ball.getRect().getMinX();
-
-            int first = paddleLPos + 8;
-            int second = paddleLPos + 16;
-            int third = paddleLPos + 24;
-            int fourth = paddleLPos + 32;
-
-            if (ballLPos < first) {
-                ball.setXDir(-1);
-                ball.setYDir(-1);
-            }
-
-            if (ballLPos >= first && ballLPos < second) {
-                ball.setXDir(-1);
-                ball.setYDir(-1 * ball.getYDir());
-            }
-
-            if (ballLPos >= second && ballLPos < third) {
-                ball.setXDir(0);
-                ball.setYDir(-1);
-            }
-
-            if (ballLPos >= third && ballLPos < fourth) {
-                ball.setXDir(1);
-                ball.setYDir(-1 * ball.getYDir());
-            }
-
-            if (ballLPos > fourth) {
-                ball.setXDir(1);
-                ball.setYDir(-1);
-            }
-        }
+        for (int i=0; i<players.length; i++)
+        	if (players[i].isAlive())
+		        if ((ball.getRect()).intersects(players[i].paddle.getRect()))
+		        	Physics.reflectBallFromPaddle(ball, players[i].paddle);
+        
         
         //TODO Check collision with the corners
         

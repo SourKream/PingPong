@@ -4,16 +4,23 @@ import javax.swing.ImageIcon;
 public class Paddle extends Sprite implements Commons {
 
     private int dx;
+    public int movingAxis; // 0 for x-axis and 1 for y-axis
 
-    public Paddle() {
+    public Paddle (int axis, int initX, int initY) {
 
-        ImageIcon ii = new ImageIcon("res/paddle.png");
+    	ImageIcon ii;
+    	if (axis==0)
+    		ii = new ImageIcon("res/paddleH.png");
+    	else 
+    		ii = new ImageIcon("res/paddleV.png");
         image = ii.getImage();
 
         i_width = image.getWidth(null);
         i_heigth = image.getHeight(null);
-
-        resetState();
+        
+        movingAxis = axis;
+        x = initX;
+        y = initY;
     }
 
     public void move() {
@@ -54,10 +61,12 @@ public class Paddle extends Sprite implements Commons {
             dx = 0;
         }
     }
-
-    private void resetState() {
-
-        x = INIT_PADDLE_X;
-        y = INIT_PADDLE_Y;
+    
+    public void setPosition(int position){
+    	
+    	if (movingAxis==0)
+    		setX(position);
+    	else
+    		setY(position);
     }
 }
