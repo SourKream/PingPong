@@ -2,47 +2,37 @@
 public class Physics implements Commons {
 	
 	public static void reflectBallFromPaddle (Ball ball, Paddle paddle){
-		
-		
-		if (paddle.movingAxis==0)
-			ball.setYDir(-1 * ball.getYDir());
-		else
-			ball.setXDir(-1 * ball.getXDir());
-/*
-		int paddleLPos = (int) paddle.getRect().getMinX();
-        int ballLPos = (int) ball.getRect().getMinX();
+				
+		if (paddle.movingAxis==0){
 
-        int first = paddleLPos + 8;
-        int second = paddleLPos + 16;
-        int third = paddleLPos + 24;
-        int fourth = paddleLPos + 32;
-        
+			int paddlePos = (int) paddle.getRect().getMaxX(); 
+	        int ballPos = (int) ball.getRect().getMaxX();
+	        int paddleLength = paddle.i_width + ball.i_width;
+	        
+	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength) * Math.PI;
+	        System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
 
-        if (ballLPos < first) {
-            ball.setXDir(-1);
-            ball.setYDir(-1);
-        }
+	        ball.setXDir((float)Math.cos(reflectingAngle));
+	        if (paddle.getY()>Commons.HEIGHT/2)
+	        	ball.setYDir(-(float)Math.sin(reflectingAngle));
+	        else
+	        	ball.setYDir((float)Math.sin(reflectingAngle));
+	        
+		} else {
+			
+			int paddlePos = (int) paddle.getRect().getMaxY();
+	        int ballPos = (int) ball.getRect().getMaxY();
+	        int paddleLength = paddle.i_heigth + ball.i_heigth;
+	       
+	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength) * Math.PI;	        
+	        System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
 
-        if (ballLPos >= first && ballLPos < second) {
-            ball.setXDir(-1);
-            ball.setYDir(-1 * ball.getYDir());
-        }
-
-        if (ballLPos >= second && ballLPos < third) {
-            ball.setXDir(0);
-            ball.setYDir(-1);
-        }
-
-        if (ballLPos >= third && ballLPos < fourth) {
-            ball.setXDir(1);
-            ball.setYDir(-1 * ball.getYDir());
-        }
-
-        if (ballLPos > fourth) {
-            ball.setXDir(1);
-            ball.setYDir(-1);
-        }
-*/
+	        ball.setYDir((float)Math.cos(reflectingAngle));
+	        if (paddle.getX()>Commons.WIDTH/2)
+	        	ball.setXDir(-(float)Math.sin(reflectingAngle));
+	        else
+	        	ball.setXDir((float)Math.sin(reflectingAngle));
+		}
 	}
 	
 	public static boolean ballHitPlayersWall(Ball ball, Player player){
@@ -66,13 +56,12 @@ public class Physics implements Commons {
 	public static void reflectBallFromWall(Ball ball, Player player){
 
 		switch (player.playerNumber){
-		case 1:	ball.setYDir(-1);
+		case 1:
+		case 3:	ball.setYDir(-1 * ball.getYDir());
 				break;
-		case 2:	ball.setXDir(1);
+		case 2: 
+		case 4:	ball.setXDir(- 1 * ball.getXDir());
 				break;
-		case 3:	ball.setYDir(1);
-				break;
-		case 4: ball.setXDir(-1);
 		}
 	}
 	
