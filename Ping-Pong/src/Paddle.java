@@ -9,27 +9,20 @@ public class Paddle extends Sprite implements Commons {
     public Paddle (int axis, int initX, int initY, int paddleType) {
 
     	ImageIcon ii;
-<<<<<<< HEAD
-    	if (axis==0)
-    		ii = new ImageIcon("../res/paddleH.png");
-    	else 
-    		ii = new ImageIcon("../res/paddleV.png");
-=======
     	if(paddleType==1)
     	{
 	    	if (axis==0)
-	    		ii = new ImageIcon("res/paddleH.png");
+	    		ii = new ImageIcon("../res/paddleH.png");
 	    	else 
-	    		ii = new ImageIcon("res/paddleV.png");
+	    		ii = new ImageIcon("../res/paddleV.png");
     	}
     	else
     	{
     		if (axis==0)
-	    		ii = new ImageIcon("res/paddleH_big.png");
+	    		ii = new ImageIcon("../res/paddleH_big.png");
 	    	else 
-	    		ii = new ImageIcon("res/paddleV_big.png");
+	    		ii = new ImageIcon("../res/paddleV_big.png");
     	}
->>>>>>> d5820fd1ca73ca545c099025f57ae0a891cc1724
         image = ii.getImage();
 
         i_width = image.getWidth(null);
