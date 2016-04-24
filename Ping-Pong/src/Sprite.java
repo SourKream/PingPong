@@ -3,25 +3,25 @@ import java.awt.Rectangle;
 
 public class Sprite {
 
-    protected int x;
-    protected int y;
+    protected float x;
+    protected float y;
     protected int i_width;
     protected int i_heigth;
     protected Image image;
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
@@ -38,7 +38,7 @@ public class Sprite {
     }
 
     Rectangle getRect() {
-        return new Rectangle(x, y,
+        return new Rectangle(Math.round(x), Math.round(y),
                 image.getWidth(null), image.getHeight(null));
     }
 }

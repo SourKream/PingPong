@@ -2,13 +2,13 @@ import javax.swing.ImageIcon;
 
 public class Ball extends Sprite implements Commons {
 
-    private int xdir;
-    private int ydir;
+    private float xdir;
+    private float ydir;
 
     public Ball() {
 
-        xdir = 1;
-        ydir = -1;
+        xdir = 1 * (float)Math.cos(Math.PI/4);
+        ydir = -1 * (float)Math.sin(Math.PI/4);
 
         ImageIcon ii = new ImageIcon("res/ball.png");
         image = ii.getImage();
@@ -32,23 +32,23 @@ public class Ball extends Sprite implements Commons {
         y = INIT_BALL_Y;
     }
 
-    public void setXDir(int x) {
+    public void setXDir(float x) {
         xdir = x;
     }
 
-    public void setYDir(int y) {
+    public void setYDir(float y) {
         ydir = y;
     }
 
-    public int getYDir() {
+    public float getYDir() {
         return ydir;
     }
     
-    public int getXDir() {
+    public float getXDir() {
         return xdir;
     }
     
-    public void setPositionAndHeading (int x, int y, int xdir, int ydir){
+    public void setPositionAndHeading (float x, float y, float xdir, float ydir){
     	setX(x);
     	setY(y);
     	this.xdir = xdir;
