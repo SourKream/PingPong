@@ -68,7 +68,7 @@ public class Board extends JPanel implements Commons {
         	players[i] = new Player(i+1);
         
         powerUps = new PowerUp[Commons.NUM_POWER_UPS];
-        for (int i=0; i<10; i++)
+        for (int i=0; i<Commons.NUM_POWER_UPS; i++)
         	powerUps[i] = new PowerUp(ThreadLocalRandom.current().nextInt(0, 5), 
         			ThreadLocalRandom.current().nextInt(50, Commons.WIDTH - 60),
         			ThreadLocalRandom.current().nextInt(50, Commons.HEIGHT - 60),
@@ -185,6 +185,7 @@ public class Board extends JPanel implements Commons {
             stopGame();
         }
         
+        // Collision of Ball with Paddle
         for (int i=0; i<players.length; i++)
         	if (players[i].isAlive())
 		        if ((ball.getRect()).intersects(players[i].paddle.getRect())){
@@ -192,6 +193,7 @@ public class Board extends JPanel implements Commons {
 		        	Physics.reflectBallFromPaddle(ball, players[i].paddle);
 		        }
 
+        // Collision of Ball with a Player's Wall
         for (int i=0; i<players.length; i++)
 	        if (Physics.ballHitPlayersWall(ball, players[i])){
 	        	System.out.println("Hit the wall of player " + Integer.toString(i+1));
@@ -199,7 +201,8 @@ public class Board extends JPanel implements Commons {
 	        		players[i].reduceLife();
 	        	Physics.reflectBallFromWall(ball, players[i]);
 	        }
-       
+        
+        // Collision of Ball with a PowerUp
         for (int i=0; i<powerUps.length; i++)
         	if (powerUps[i].isActive())
         		if (powerUps[i].getRect().intersects(ball.getRect())){
@@ -207,10 +210,10 @@ public class Board extends JPanel implements Commons {
         			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
         		}
   
+        // Collision of Ball with a corner
         for (int i = 0; i<4; i++)
-        	if (Physics.ballHitsCorner(i+1, ball))
-        	{
-        		System.out.println("Ball has hit the corner"+i);
+        	if (Physics.ballHitsCorner(i+1, ball)) {
+        		System.out.println("Ball has hit the corner "+i);
         		Physics.reflectBallFromCorner(ball, i+1);
         	}	       
     }
@@ -219,6 +222,10 @@ public class Board extends JPanel implements Commons {
     	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
     	if (powerUp.powerUpType==1){
     		player.extraLife();
+    		return;
+    	}
+    	if (powerUp.powerUpType==4){
+    		ball.increaseSpeed();
     		return;
     	}
     }

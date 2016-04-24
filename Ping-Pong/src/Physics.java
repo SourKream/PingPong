@@ -5,11 +5,12 @@ public class Physics implements Commons {
 				
 		if (paddle.movingAxis==0){
 
-			int paddlePos = (int) paddle.getRect().getMaxX(); 
+			int paddlePos = (int) paddle.getRect().getMaxX() + ball.i_width; 
 	        int ballPos = (int) ball.getRect().getMaxX();
-	        int paddleLength = paddle.i_width + ball.i_width;
+	        int paddleLength = paddle.i_width + 2*ball.i_width;
 	        
-	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength) * Math.PI;
+	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength);
+	        reflectingAngle = reflectingAngle*Math.PI*5/6 + Math.PI/12;
 	        System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
 
 	        ball.setXDir((float)Math.cos(reflectingAngle));
@@ -20,11 +21,12 @@ public class Physics implements Commons {
 	        
 		} else {
 			
-			int paddlePos = (int) paddle.getRect().getMaxY();
+			int paddlePos = (int) paddle.getRect().getMaxY() + ball.i_heigth;
 	        int ballPos = (int) ball.getRect().getMaxY();
-	        int paddleLength = paddle.i_heigth + ball.i_heigth;
+	        int paddleLength = paddle.i_heigth + 2*ball.i_heigth;
 	       
-	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength) * Math.PI;	        
+	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength);
+	        reflectingAngle = reflectingAngle*Math.PI*5/6 + Math.PI/12;
 	        System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
 
 	        ball.setYDir((float)Math.cos(reflectingAngle));
@@ -73,14 +75,14 @@ public class Physics implements Commons {
 				return true;
 				break;
 		case 2:	if(ball.getY() <= CORNER_2_Y[0] + 
-				(1)*(ball.getX()-CORNER_2_X[0]))
+				(1)*(ball.getX()+ball.i_width-CORNER_2_X[0]))
 				return true;
 				break;
-		case 3:	if(ball.getY() >= CORNER_3_Y[0] + 
-				(-1)*(ball.getX()-CORNER_3_X[0]))
+		case 3:	if(ball.getY()+ball.i_heigth >= CORNER_3_Y[0] + 
+				(-1)*(ball.getX()+ball.i_width-CORNER_3_X[0]))
 				return true;
 				break;
-		case 4: if(ball.getY() >= CORNER_4_Y[0] + 
+		case 4: if(ball.getY()+ball.i_heigth >= CORNER_4_Y[0] + 
 				(1)*(ball.getX()-CORNER_4_X[0]))
 				return true;
 				break;
@@ -90,81 +92,23 @@ public class Physics implements Commons {
 
     public static void reflectBallFromCorner(Ball ball, int corner_no){
     	
+    	// Corner number 1 -> Top Left
+    	// Corner number 2 -> Top Right ...
+    	
     	float xdir = ball.getXDir();
     	float ydir = ball.getYDir();
-    	double reflectingAngle = (Math.PI/2) - Math.abs(Math.atan((double)(ydir/xdir)));
+    	
     	switch(corner_no)
     	{
-    	case 1:	if(xdir>0 && ydir<0)
-		    	{
-		    		ball.setXDir((float)Math.cos(reflectingAngle));
-		    		ball.setYDir(-1*(float)Math.sin(reflectingAngle));
-		    		
-		    	}    	
-		    	else if(xdir<0 && ydir>0)
-		    	{
-		    		ball.setXDir(-1*(float)Math.cos(reflectingAngle));
-		    		ball.setYDir((float)Math.sin(reflectingAngle));
-		    	}
-		    	else
-		    	{
-		    		ball.setXDir((float)Math.cos(reflectingAngle));
-		    		ball.setYDir((float)Math.sin(reflectingAngle));
-		    	}
+    	case 1:
+    	case 3:	ball.setXDir(-ydir);
+    			ball.setYDir(-xdir);
     			break;
-    	case 2:if(xdir>0 && ydir>0)
-		    	{
-		    		ball.setXDir((float)Math.cos(reflectingAngle));
-		    		ball.setYDir((float)Math.sin(reflectingAngle));
-		    		
-		    	}    	
-		    	else if(xdir<0 && ydir<0)
-		    	{
-		    		ball.setXDir(-1*(float)Math.cos(reflectingAngle));
-		    		ball.setYDir(-1*(float)Math.sin(reflectingAngle));
-		    	}
-		    	else
-		    	{
-		    		ball.setXDir(-1*(float)Math.cos(reflectingAngle));
-		    		ball.setYDir((float)Math.sin(reflectingAngle));
-		    	}
-				break;
-    	case 3:if(xdir<0 && ydir>0)
-		    	{
-		    		ball.setXDir(-1*(float)Math.cos(reflectingAngle));
-		    		ball.setYDir((float)Math.sin(reflectingAngle));
-		    		
-		    	}    	
-		    	else if(xdir>0 && ydir<0)
-		    	{
-		    		ball.setXDir((float)Math.cos(reflectingAngle));
-		    		ball.setYDir(-1*(float)Math.sin(reflectingAngle));
-		    	}
-		    	else
-		    	{
-		    		ball.setXDir(-1*(float)Math.cos(reflectingAngle));
-		    		ball.setYDir(-1*(float)Math.sin(reflectingAngle));
-		    	}
-				break;
-    	case 4:if(xdir>0 && ydir>0)
-		    	{
-		    		ball.setXDir((float)Math.cos(reflectingAngle));
-		    		ball.setYDir((float)Math.sin(reflectingAngle));
-		    		
-		    	}    	
-		    	else if(xdir<0 && ydir<0)
-		    	{
-		    		ball.setXDir(-1*(float)Math.cos(reflectingAngle));
-		    		ball.setYDir(-1*(float)Math.sin(reflectingAngle));
-		    	}
-		    	else
-		    	{
-		    		ball.setXDir((float)Math.cos(reflectingAngle));
-		    		ball.setYDir(-1*(float)Math.sin(reflectingAngle));
-		    	}
+    	case 2:
+    	case 4: ball.setXDir(ydir);
+				ball.setYDir(xdir);
 				break;
     	}
-    	
 	}
 	
 }

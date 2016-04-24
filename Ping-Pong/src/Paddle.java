@@ -27,12 +27,12 @@ public class Paddle extends Sprite implements Commons {
 
         x += dx;
 
-        if (x <= BORDER + SIZE) {
-            x = BORDER + SIZE;
+        if (x <= BORDER + SIZE + 2) {
+            x = BORDER + SIZE + 2;
         }
 
-        if (x >= WIDTH - i_width - BORDER - SIZE) {
-            x = WIDTH - i_width - BORDER - SIZE;
+        if (x >= WIDTH - i_width - BORDER - SIZE - 2) {
+            x = WIDTH - i_width - BORDER - SIZE - 2;
         }
     }
 
