@@ -26,6 +26,7 @@ public class Board extends JPanel implements Commons {
     public Board() {
 
         initBoard();
+        startGame();
     }
 
     private void initBoard() {
@@ -42,6 +43,9 @@ public class Board extends JPanel implements Commons {
         
         setDoubleBuffered(true);
         timer = new Timer();
+    }
+    
+    public void startGame(){
         timer.scheduleAtFixedRate(new ScheduleTask(), DELAY, PERIOD);
     }
 
@@ -87,12 +91,13 @@ public class Board extends JPanel implements Commons {
     
     private void drawObjects(Graphics2D g2d) {
         
-        g2d.drawImage(ball.getImage(), ball.getX(), ball.getY(),
+        g2d.drawImage(ball.getImage(), Math.round(ball.getX()), Math.round(ball.getY()),
                 ball.getWidth(), ball.getHeight(), this);
         
         for (int i=0; i<players.length; i++){
         	if (players[i].isAlive())
-	            g2d.drawImage(players[i].paddle.getImage(), players[i].paddle.getX(), players[i].paddle.getY(),
+	            g2d.drawImage(players[i].paddle.getImage(), 
+	            		Math.round(players[i].paddle.getX()), Math.round(players[i].paddle.getY()),
 	            		players[i].paddle.getWidth(), players[i].paddle.getHeight(), this);
         }
     }
