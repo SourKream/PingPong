@@ -11,7 +11,7 @@ public class Physics implements Commons {
 	        
 	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength);
 	        reflectingAngle = reflectingAngle*Math.PI*5/6 + Math.PI/12;
-	        System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
+	        //System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
 
 	        ball.setXDir((float)Math.cos(reflectingAngle));
 	        if (paddle.getY()>Commons.HEIGHT/2)
@@ -27,7 +27,7 @@ public class Physics implements Commons {
 	       
 	        double reflectingAngle = (((double)paddlePos - ballPos)/paddleLength);
 	        reflectingAngle = reflectingAngle*Math.PI*5/6 + Math.PI/12;
-	        System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
+	        //System.out.println("Reflection Angle (degrees): "+ Double.toString(reflectingAngle*180/Math.PI));
 
 	        ball.setYDir((float)Math.cos(reflectingAngle));
 	        if (paddle.getX()>Commons.WIDTH/2)
