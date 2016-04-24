@@ -21,6 +21,7 @@ public class Board extends JPanel implements Commons {
 
     private Timer timer;
     private int timeCount;
+    private int paddleTimeCount;
     private String message = "Game Over";
     private Ball ball;
     private Player players[];
@@ -175,6 +176,7 @@ public class Board extends JPanel implements Commons {
             ball.move();
             players[0].paddle.move();
             checkCollision();
+            checkPaddle();
             repaint();
             timeCount = (timeCount + 1)%Commons.MAX_COUNT;
             checkShowTimeForPowerUps();
@@ -187,6 +189,24 @@ public class Board extends JPanel implements Commons {
     private void checkShowTimeForPowerUps(){
     	for (int i=0; i<powerUps.length; i++)
     		powerUps[i].checkShowTime(timeCount);
+    }
+    
+    private void checkPaddle()
+    {
+    	for(int i=0; i<4; i++)
+    	{
+    		if(players[i].isBigPaddle)
+        	{
+        		paddleTimeCount += 1;
+        		if(paddleTimeCount == Commons.PADDLE_COUNT)
+        		{
+        			players[i].isBigPaddle = false;
+        			players[i].smallPaddle(i+1);
+        			paddleTimeCount = 0;
+        		}
+        	}	
+    	}
+    	    			
     }
 
     private void stopGame() {
@@ -229,14 +249,30 @@ public class Board extends JPanel implements Commons {
   
         // Collision of Ball with a corner
         for (int i = 0; i<4; i++)
+<<<<<<< HEAD
         	if (Physics.ballHitsCorner(i+1, ball)) {
         		//System.out.println("Ball has hit the corner "+i);
+=======
+        	if (Physics.ballHitsCorner(i+1, ball))
+        	{
+        		System.out.println("corner "+(i+1)+" hit!");
+>>>>>>> d5820fd1ca73ca545c099025f57ae0a891cc1724
         		Physics.reflectBallFromCorner(ball, i+1);
         	}	       
     }
     
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
+<<<<<<< HEAD
     	//System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
+=======
+    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
+    	if (powerUp.powerUpType==0)
+    	{
+    		player.bigPaddle(player.playerNumber);
+    		player.isBigPaddle = true;
+    		paddleTimeCount = 0;
+    	}
+>>>>>>> d5820fd1ca73ca545c099025f57ae0a891cc1724
     	if (powerUp.powerUpType==1){
     		player.extraLife();
     		return;
@@ -273,8 +309,13 @@ public class Board extends JPanel implements Commons {
     	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
     	data += Integer.toString(players[0].networkPacketNumber).concat(",");
     	players[0].networkPacketNumber += 1;
+<<<<<<< HEAD
     	data += Float.toString(players[0].paddle.x).concat(",");
 
     	return data;
+=======
+    	data.concat(Float.toString(players[0].paddle.x).concat(","));
+    	
+>>>>>>> d5820fd1ca73ca545c099025f57ae0a891cc1724
     }
 }
