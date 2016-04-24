@@ -4,6 +4,7 @@ import java.awt.geom.Rectangle2D;
 public class Corners implements Commons {
 	
 	public Polygon poly;
+	public float slope; 
 
     public Corners(int [] x, int [] y) {
     	 poly = new Polygon(x, y, 3);
@@ -18,5 +19,7 @@ public class Corners implements Commons {
     {
 		return poly.getBounds2D();
     }
+    
+
 
 }
