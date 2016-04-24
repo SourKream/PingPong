@@ -212,7 +212,6 @@ public class Board extends JPanel implements Commons {
         		if(shieldTimeCount == Commons.POWER_UP_TIME)
         		{
         			players[i].hasShield = false;
-        			players[i].smallPaddle(i+1);
         			shieldTimeCount = 0;
         		}
         	}
