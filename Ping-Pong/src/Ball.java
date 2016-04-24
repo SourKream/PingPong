@@ -4,6 +4,7 @@ public class Ball extends Sprite implements Commons {
 
     private float xdir;
     private float ydir;
+    private float speedup = 1;
 
     public Ball() {
 
@@ -21,9 +22,17 @@ public class Ball extends Sprite implements Commons {
 
     public void move() {
         
-        x += xdir;
-        y += ydir;
+        x += speedup * xdir;
+        y += speedup * ydir;
 
+    }
+    
+    public void increaseSpeed(){
+    	speedup = 2;
+    }
+    
+    public void slowDown(){
+    	speedup = 1;
     }
 
     private void resetState() {

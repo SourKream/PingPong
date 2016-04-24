@@ -66,13 +66,12 @@ public class Board extends JPanel implements Commons {
         for (int i=0; i<4; i++)
         	players[i] = new Player(i+1);
         
-        powerUps = new PowerUp[10];
+        powerUps = new PowerUp[Commons.NUM_POWER_UPS];
         for (int i=0; i<10; i++)
         	powerUps[i] = new PowerUp(ThreadLocalRandom.current().nextInt(0, 5), 
         			ThreadLocalRandom.current().nextInt(50, Commons.WIDTH - 60),
         			ThreadLocalRandom.current().nextInt(50, Commons.HEIGHT - 60),
-        			ThreadLocalRandom.current().nextInt(Commons.MAX_COUNT/8,Commons.MAX_COUNT));
-        
+        			ThreadLocalRandom.current().nextInt((Commons.MAX_COUNT*i)/Commons.NUM_POWER_UPS,(Commons.MAX_COUNT*(i+1))/Commons.NUM_POWER_UPS));        
     }
 
     @Override
