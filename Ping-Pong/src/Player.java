@@ -2,6 +2,9 @@ import java.awt.Graphics2D;
 
 public class Player implements Commons{
 	
+	public int networkPlayerNumber;
+	public int networkPacketNumber = 0;
+	
 	public Paddle paddle;
 	private int lives;
 	public boolean isBigPaddle;
@@ -66,4 +69,16 @@ public class Player implements Commons{
 				break;
 		}
 	}
+	
+	public void setPaddlePosition(float position){
+		if (playerNumber == 2)
+			paddle.setY(position);
+		
+		if (playerNumber == 3)
+			paddle.setX(WIDTH - position - paddle.i_width);
+			
+		if (playerNumber == 4)
+			paddle.setY(HEIGHT - position - paddle.i_heigth);
+	}	
+	
 }
