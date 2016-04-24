@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
@@ -205,9 +206,13 @@ public class Board extends JPanel implements Commons {
         			powerUps[i].Disable();
         			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
         		}
-        
-        //TODO Check collision with the corners
-        
+  
+        for (int i = 0; i<4; i++)
+        	if (Physics.ballHitsCorner(i+1, ball))
+        	{
+        		System.out.println("Ball has hit the corner"+i);
+        		Physics.reflectBallFromCorner(ball, i+1);
+        	}	       
     }
     
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
