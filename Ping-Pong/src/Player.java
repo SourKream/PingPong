@@ -7,7 +7,8 @@ public class Player implements Commons{
 	
 	public Paddle paddle;
 	private int lives;
-	public boolean isBigPaddle;
+	public boolean hasBigPaddle;
+	public boolean hasShield;
 	public int playerNumber;  // Player 1 at 6
 							  // Player 2 at 9
 							  // Player 3 at 12
@@ -17,7 +18,8 @@ public class Player implements Commons{
 		
 		playerNumber = num;
 		lives = INIT_LIVES;
-		isBigPaddle = false;
+		hasBigPaddle = false;
+		hasShield = false;
 		switch(num){
 		case 1: paddle = new Paddle(0, WIDTH/2, BOTTOM_EDGE - 8, 1);
 				break;
@@ -35,7 +37,10 @@ public class Player implements Commons{
 	}
 	
 	public void reduceLife(){
-		lives = lives - 1;
+		if(!hasShield)
+			lives = lives - 1;
+		else
+			System.out.println("Wall has shield!");
 	}
 	
 	public void extraLife(){
