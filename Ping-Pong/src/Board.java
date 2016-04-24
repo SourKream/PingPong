@@ -19,6 +19,7 @@ public class Board extends JPanel implements Commons {
 
     private Timer timer;
     private int timeCount;
+    private int paddleTimeCount;
     private String message = "Game Over";
     private Ball ball;
     private Player players[];
@@ -162,6 +163,7 @@ public class Board extends JPanel implements Commons {
             ball.move();
             players[0].paddle.move();
             checkCollision();
+            checkPaddle();
             repaint();
             timeCount = (timeCount + 1)%Commons.MAX_COUNT;
             checkShowTimeForPowerUps();
@@ -171,6 +173,24 @@ public class Board extends JPanel implements Commons {
     private void checkShowTimeForPowerUps(){
     	for (int i=0; i<powerUps.length; i++)
     		powerUps[i].checkShowTime(timeCount);
+    }
+    
+    private void checkPaddle()
+    {
+    	for(int i=0; i<4; i++)
+    	{
+    		if(players[i].isBigPaddle)
+        	{
+        		paddleTimeCount += 1;
+        		if(paddleTimeCount == Commons.PADDLE_COUNT)
+        		{
+        			players[i].isBigPaddle = false;
+        			players[i].smallPaddle(i+1);
+        			paddleTimeCount = 0;
+        		}
+        	}	
+    	}
+    	    			
     }
 
     private void stopGame() {
@@ -211,16 +231,23 @@ public class Board extends JPanel implements Commons {
         for (int i = 0; i<4; i++)
         	if (Physics.ballHitsCorner(i+1, ball))
         	{
-        		System.out.println("Ball has hit the corner"+i);
+        		System.out.println("corner "+(i+1)+" hit!");
         		Physics.reflectBallFromCorner(ball, i+1);
         	}	       
     }
     
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
     	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
+    	if (powerUp.powerUpType==0)
+    	{
+    		player.bigPaddle(player.playerNumber);
+    		player.isBigPaddle = true;
+    		paddleTimeCount = 0;
+    	}
     	if (powerUp.powerUpType==1){
     		player.extraLife();
     		return;
     	}
+    	
     }
 }
