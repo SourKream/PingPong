@@ -57,9 +57,6 @@ public class Board extends JPanel implements Commons {
         players = new Player[4];
         for (int i=0; i<4; i++)
         	players[i] = new Player(i+1);
-        players[2].reduceLife();
-        players[2].reduceLife();
-        players[2].reduceLife();
     }
 
     @Override
@@ -154,7 +151,7 @@ public class Board extends JPanel implements Commons {
 
     private void checkCollision() {
 
-        if (ball.getRect().getMaxY() > Commons.BOTTOM_EDGE) {
+        if (!players[0].isAlive()) {
             stopGame();
         }
         
@@ -162,7 +159,14 @@ public class Board extends JPanel implements Commons {
         	if (players[i].isAlive())
 		        if ((ball.getRect()).intersects(players[i].paddle.getRect()))
 		        	Physics.reflectBallFromPaddle(ball, players[i].paddle);
-        
+
+        for (int i=0; i<players.length; i++)
+	        if (Physics.ballHitPlayersWall(ball, players[i])){
+	        	System.out.println("Hit the wall of player " + Integer.toString(i+1));
+	        	if (players[i].isAlive())
+	        		players[i].reduceLife();
+	        	Physics.reflectBallFromWall(ball, players[i]);
+	        }
         
         //TODO Check collision with the corners
         

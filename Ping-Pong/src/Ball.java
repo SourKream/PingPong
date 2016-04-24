@@ -24,17 +24,6 @@ public class Ball extends Sprite implements Commons {
         x += xdir;
         y += ydir;
 
-        if (x == BORDER) {
-            setXDir(1);
-        }
-
-        if (x == WIDTH - i_width - BORDER) {
-            setXDir(-1);
-        }
-
-        if (y == BORDER) {
-            setYDir(1);
-        }
     }
 
     private void resetState() {

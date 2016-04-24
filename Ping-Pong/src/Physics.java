@@ -44,4 +44,35 @@ public class Physics {
         }
 */
 	}
+	
+	public static boolean ballHitPlayersWall(Ball ball, Player player){
+		
+		switch (player.playerNumber){
+		case 1:	if (ball.getRect().getMaxY()>=Commons.BOTTOM_EDGE)
+					return true;
+				break;
+		case 2:	if (ball.getRect().getMinX()<=Commons.BORDER)
+					return true;
+				break;
+		case 3:	if (ball.getRect().getMinY()<=Commons.BORDER)
+					return true;
+				break;
+		case 4: if (ball.getRect().getMaxX()>=Commons.BOTTOM_EDGE)
+					return true;
+		}
+		return false;
+	}
+	
+	public static void reflectBallFromWall(Ball ball, Player player){
+
+		switch (player.playerNumber){
+		case 1:	ball.setYDir(-1);
+				break;
+		case 2:	ball.setXDir(1);
+				break;
+		case 3:	ball.setYDir(1);
+				break;
+		case 4: ball.setXDir(-1);
+		}
+	}
 }

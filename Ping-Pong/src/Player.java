@@ -4,7 +4,7 @@ public class Player implements Commons{
 	
 	public Paddle paddle;
 	private int lives;
-	private int playerNumber; // Player 1 at 6
+	public int playerNumber;  // Player 1 at 6
 							  // Player 2 at 9
 							  // Player 3 at 12
 							  // Player 4 at 3
@@ -27,7 +27,7 @@ public class Player implements Commons{
 	}
 	
 	public boolean isAlive(){
-		return lives!=0;
+		return lives>0;
 	}
 	
 	public void reduceLife(){
