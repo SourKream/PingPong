@@ -33,4 +33,8 @@ public class Player implements Commons{
 	public void reduceLife(){
 		lives = lives - 1;
 	}
+	
+	public void extraLife(){
+		lives = lives + 1;
+	}
 }

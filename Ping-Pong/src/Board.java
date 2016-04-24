@@ -13,16 +13,20 @@ import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Board extends JPanel implements Commons {
 
     private Timer timer;
+    private int timeCount;
     private String message = "Game Over";
     private Ball ball;
     private Player players[];
     private Corners corner[];
     private boolean ingame = true;
-
+    private PowerUp powerUps[];
+    private int lastPlayerToHitTheBall = 0;
+    
     public Board() {
 
         initBoard();
@@ -62,6 +66,14 @@ public class Board extends JPanel implements Commons {
         players = new Player[4];
         for (int i=0; i<4; i++)
         	players[i] = new Player(i+1);
+        
+        powerUps = new PowerUp[10];
+        for (int i=0; i<10; i++)
+        	powerUps[i] = new PowerUp(ThreadLocalRandom.current().nextInt(0, 5), 
+        			ThreadLocalRandom.current().nextInt(50, Commons.WIDTH - 60),
+        			ThreadLocalRandom.current().nextInt(50, Commons.HEIGHT - 60),
+        			ThreadLocalRandom.current().nextInt(Commons.MAX_COUNT/8,Commons.MAX_COUNT));
+        
     }
 
     @Override
@@ -94,12 +106,18 @@ public class Board extends JPanel implements Commons {
         g2d.drawImage(ball.getImage(), Math.round(ball.getX()), Math.round(ball.getY()),
                 ball.getWidth(), ball.getHeight(), this);
         
-        for (int i=0; i<players.length; i++){
+        for (int i=0; i<players.length; i++)
         	if (players[i].isAlive())
 	            g2d.drawImage(players[i].paddle.getImage(), 
 	            		Math.round(players[i].paddle.getX()), Math.round(players[i].paddle.getY()),
 	            		players[i].paddle.getWidth(), players[i].paddle.getHeight(), this);
-        }
+        
+        for (int i=0; i<powerUps.length; i++)
+        	if (powerUps[i].isActive())
+	            g2d.drawImage(powerUps[i].getImage(), 
+	            		(int)powerUps[i].getX(),(int)powerUps[i].getY(),
+	            		powerUps[i].getWidth(), powerUps[i].getHeight(), this);
+        
     }
     
     private void drawCorners(Graphics2D g2d) {
@@ -145,7 +163,14 @@ public class Board extends JPanel implements Commons {
             players[0].paddle.move();
             checkCollision();
             repaint();
+            timeCount = (timeCount + 1)%Commons.MAX_COUNT;
+            checkShowTimeForPowerUps();
         }
+    }
+    
+    private void checkShowTimeForPowerUps(){
+    	for (int i=0; i<powerUps.length; i++)
+    		powerUps[i].checkShowTime(timeCount);
     }
 
     private void stopGame() {
@@ -163,8 +188,10 @@ public class Board extends JPanel implements Commons {
         
         for (int i=0; i<players.length; i++)
         	if (players[i].isAlive())
-		        if ((ball.getRect()).intersects(players[i].paddle.getRect()))
+		        if ((ball.getRect()).intersects(players[i].paddle.getRect())){
+		        	lastPlayerToHitTheBall = i;
 		        	Physics.reflectBallFromPaddle(ball, players[i].paddle);
+		        }
 
         for (int i=0; i<players.length; i++)
 	        if (Physics.ballHitPlayersWall(ball, players[i])){
@@ -173,12 +200,27 @@ public class Board extends JPanel implements Commons {
 	        		players[i].reduceLife();
 	        	Physics.reflectBallFromWall(ball, players[i]);
 	        }
-        
+       
+        for (int i=0; i<powerUps.length; i++)
+        	if (powerUps[i].isActive())
+        		if (powerUps[i].getRect().intersects(ball.getRect())){
+        			powerUps[i].Disable();
+        			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
+        		}
+  
         for (int i = 0; i<4; i++)
         	if (Physics.ballHitsCorner(i+1, ball))
         	{
         		System.out.println("Ball has hit the corner"+i);
         		Physics.reflectBallFromCorner(ball, i+1);
         	}	       
+    }
+    
+    private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
+    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
+    	if (powerUp.powerUpType==1){
+    		player.extraLife();
+    		return;
+    	}
     }
 }
