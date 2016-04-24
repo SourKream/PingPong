@@ -27,15 +27,20 @@ public class Board extends JPanel implements Commons {
     private Ball ball;
     private Player players[];
     private Corners corner[];
-    private boolean ingame = true;
+    public boolean ingame = true;
     private PowerUp powerUps[];
     private int lastPlayerToHitTheBall = 0;
+	
+	private NetworkHandler nwh;
     
     public Board() {
 
         initBoard();
-        startGame();
     }
+	
+	public void setNWH(NetworkHandler nwh){
+		this.nwh = nwh;
+	}
 
     private void initBoard() {
 
@@ -56,10 +61,10 @@ public class Board extends JPanel implements Commons {
     public void startGame(){
     	
     	// Assigning Network Player Number to all players
-//		players[0].networkPlayerNumber = NetworkHandler.myPlayerNo;
-//		players[1].networkPlayerNumber = (NetworkHandler.myPlayerNo + 1)%4;
-//		players[2].networkPlayerNumber = (NetworkHandler.myPlayerNo + 2)%4;
-//		players[3].networkPlayerNumber = (NetworkHandler.myPlayerNo + 3)%4;
+		players[0].networkPlayerNumber = nwh.myPlayerNo;
+		players[1].networkPlayerNumber = (nwh.myPlayerNo + 1)%4;
+		players[2].networkPlayerNumber = (nwh.myPlayerNo + 2)%4;
+		players[3].networkPlayerNumber = (nwh.myPlayerNo + 3)%4;
     	
         timer.scheduleAtFixedRate(new ScheduleTask(), DELAY, PERIOD);
     }
@@ -176,6 +181,9 @@ public class Board extends JPanel implements Commons {
             repaint();
             timeCount = (timeCount + 1)%Commons.MAX_COUNT;
             checkShowTimeForPowerUps();
+			
+			String update = updateStateOnNetwork();
+			nwh.sendStateInfo(update);
         }
     }
     
@@ -236,7 +244,7 @@ public class Board extends JPanel implements Commons {
         // Collision of Ball with a Player's Wall
         for (int i=0; i<players.length; i++)
 	        if (Physics.ballHitPlayersWall(ball, players[i])){
-	        	System.out.println("Hit the wall of player " + Integer.toString(i+1));
+	        	//System.out.println("Hit the wall of player " + Integer.toString(i+1));
 	        	if (players[i].isAlive())
 	        		players[i].reduceLife();
 	        	Physics.reflectBallFromWall(ball, players[i]);
@@ -252,15 +260,14 @@ public class Board extends JPanel implements Commons {
   
         // Collision of Ball with a corner
         for (int i = 0; i<4; i++)
-        	if (Physics.ballHitsCorner(i+1, ball))
-        	{
-        		System.out.println("corner "+(i+1)+" hit!");
+        	if (Physics.ballHitsCorner(i+1, ball)) {
+        		//System.out.println("Ball has hit the corner "+i);
         		Physics.reflectBallFromCorner(ball, i+1);
         	}	       
     }
     
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
-    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
+//    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
     	if (powerUp.powerUpType==0)
     	{
     		player.bigPaddle(player.playerNumber);
@@ -302,15 +309,16 @@ public class Board extends JPanel implements Commons {
     	}
     }
     
-    public void updateStateOnNetwork (){
+    public String updateStateOnNetwork (){
     	
     	String data = "";
     	
-    	data.concat("a,");
-    	data.concat(Integer.toString(players[0].networkPlayerNumber).concat(","));
-    	data.concat(Integer.toString(players[0].networkPacketNumber).concat(","));
+    	data += "a,";
+    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
+    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
     	players[0].networkPacketNumber += 1;
-    	data.concat(Float.toString(players[0].paddle.x).concat(","));
-    	
+    	data += Float.toString(players[0].paddle.x).concat(",");
+
+    	return data;
     }
 }

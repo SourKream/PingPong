@@ -4,7 +4,7 @@ public class Ball extends Sprite implements Commons {
 
     private float xdir;
     private float ydir;
-    private float speedup = 1;
+    private float speedup = 0;	
     private int speedupCounter;
 
     public Ball() {
@@ -12,7 +12,7 @@ public class Ball extends Sprite implements Commons {
         xdir = 1 * (float)Math.cos(Math.PI/4);
         ydir = -1 * (float)Math.sin(Math.PI/4);
 
-        ImageIcon ii = new ImageIcon("res/ball.png");
+        ImageIcon ii = new ImageIcon("../res/ball.png");
         image = ii.getImage();
 
         i_width = image.getWidth(null);
