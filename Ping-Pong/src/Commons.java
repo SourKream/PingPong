@@ -6,8 +6,8 @@ public interface Commons {
     public static final int WIDTH = 400;
     public static final int HEIGHT = 400;
     public static final int BOTTOM_EDGE = HEIGHT - BORDER;
-    public static final int INIT_BALL_X = WIDTH/2 + 20;
-    public static final int INIT_BALL_Y = BOTTOM_EDGE - 15;    
+    public static final int INIT_BALL_X = WIDTH/2 + 30;
+    public static final int INIT_BALL_Y = BOTTOM_EDGE - 30;    
     public static final int DELAY = 1000;
     public static final int PERIOD = 5;
     public static final int SIZE = 26;

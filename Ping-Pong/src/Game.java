@@ -7,17 +7,19 @@ import javax.swing.border.LineBorder;
 
 public class Game extends JFrame {
 
+	private Board board;
+	
     public Game() {
         
         initUI();
     }
     
     private void initUI() {
-        Board bd = new Board();
+        board = new Board();
         
         Border thickBorder = new LineBorder(Color.RED, Commons.BORDER);
-        bd.setBorder(thickBorder);
-        add(bd);
+        board.setBorder(thickBorder);
+        add(board);
         
     //    add(new MenuPane(), BorderLayout.AFTER_LINE_ENDS);
         

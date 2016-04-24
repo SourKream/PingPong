@@ -61,12 +61,4 @@ public class Paddle extends Sprite implements Commons {
             dx = 0;
         }
     }
-    
-    public void setPosition(int position){
-    	
-    	if (movingAxis==0)
-    		setX(position);
-    	else
-    		setY(position);
-    }
 }

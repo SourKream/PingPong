@@ -3,6 +3,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -50,6 +52,13 @@ public class Board extends JPanel implements Commons {
     }
     
     public void startGame(){
+    	
+    	// Assigning Network Player Number to all players
+//		players[0].networkPlayerNumber = NetworkHandler.myPlayerNo;
+//		players[1].networkPlayerNumber = (NetworkHandler.myPlayerNo + 1)%4;
+//		players[2].networkPlayerNumber = (NetworkHandler.myPlayerNo + 2)%4;
+//		players[3].networkPlayerNumber = (NetworkHandler.myPlayerNo + 3)%4;
+    	
         timer.scheduleAtFixedRate(new ScheduleTask(), DELAY, PERIOD);
     }
 
@@ -228,5 +237,36 @@ public class Board extends JPanel implements Commons {
     		ball.increaseSpeed();
     		return;
     	}
+    }
+    
+    public void updateStateFromNetwork (String inputString){
+
+    	String data[] = inputString.split(",");
+    	String opCode = data[0];
+    	if (opCode.equals("a")){
+    		int playerNumber = Integer.parseInt(data[1]);    		
+    		for (int i=0; i<4; i++)
+				if (players[i].networkPlayerNumber==playerNumber){					
+					int packetNumber = Integer.parseInt(data[2]);
+					if (packetNumber > players[i].networkPacketNumber){
+						players[i].networkPacketNumber = packetNumber;
+						float position = Float.parseFloat(data[3]);
+						players[i].setPaddlePosition(position);
+					}					
+				}
+    	}
+    }
+    
+    public void updateStateOnNetwork (){
+    	
+    	String data = "";
+    	
+    	data.concat("a,");
+    	data.concat(Integer.toString(players[0].networkPlayerNumber).concat(","));
+    	data.concat(Integer.toString(players[0].networkPacketNumber).concat(","));
+    	players[0].networkPacketNumber += 1;
+    	data.concat(Float.toString(players[0].paddle.x).concat(","));
+    	
+    	
     }
 }
