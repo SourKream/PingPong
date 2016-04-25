@@ -22,6 +22,7 @@ public class Board extends JPanel implements Commons {
     private Timer timer;
     private int timeCount;
     private int paddleTimeCount;
+    private int shieldTimeCount;
     private String message = "Game Over";
     private Ball ball;
     private Player players[];
@@ -279,16 +280,25 @@ public class Board extends JPanel implements Commons {
     {
     	for(int i=0; i<4; i++)
     	{
-    		if(players[i].isBigPaddle)
+    		if(players[i].hasBigPaddle)
         	{
         		paddleTimeCount += 1;
-        		if(paddleTimeCount == Commons.PADDLE_COUNT)
+        		if(paddleTimeCount == Commons.POWER_UP_TIME)
         		{
-        			players[i].isBigPaddle = false;
+        			players[i].hasBigPaddle = false;
         			players[i].smallPaddle(i+1);
         			paddleTimeCount = 0;
         		}
         	}	
+    		if(players[i].hasShield)
+        	{
+        		shieldTimeCount += 1;
+        		if(shieldTimeCount == Commons.POWER_UP_TIME)
+        		{
+        			players[i].hasShield = false;
+        			shieldTimeCount = 0;
+        		}
+        	}
     	}
     	    			
     }
@@ -346,11 +356,18 @@ public class Board extends JPanel implements Commons {
 //    	if (powerUp.powerUpType==0)
 //    	{
 //    		player.bigPaddle(player.playerNumber);
-//    		player.isBigPaddle = true;
+//    		player.hasBigPaddle = true;
 //    		paddleTimeCount = 0;
+//    		return;
 //    	}
     	if (powerUp.powerUpType==1){
     		player.extraLife();
+    		return;
+    	}
+    	if(powerUp.powerUpType==3)
+    	{
+    		player.hasShield = true;
+    		shieldTimeCount = 0;
     		return;
     	}
     	if (powerUp.powerUpType==4){
