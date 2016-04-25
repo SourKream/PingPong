@@ -25,16 +25,19 @@ public class Board extends JPanel implements Commons {
     private String message = "Game Over";
     private Ball ball;
     private Player players[];
+    private int numPlayers = 1;
     private Corners corner[];
     public boolean ingame = true;
     private PowerUp powerUps[];
-    private int lastPlayerToHitTheBall = 0;
+    private int lastPlayerToHitTheBall;
+    private int hostPlayer;
 	
 	private NetworkHandler nwh;
     
-    public Board() {
+    public Board (int players) {
 
         initBoard();
+        this.numPlayers = players;
     }
 	
 	public void setNWH(NetworkHandler nwh){
@@ -60,12 +63,54 @@ public class Board extends JPanel implements Commons {
     public void startGame(){
     	
     	// Assigning Network Player Number to all players
-		players[0].networkPlayerNumber = nwh.myPlayerNo;
-		players[1].networkPlayerNumber = (nwh.myPlayerNo + 1)%4;
-		players[2].networkPlayerNumber = (nwh.myPlayerNo + 2)%4;
-		players[3].networkPlayerNumber = (nwh.myPlayerNo + 3)%4;
+    	if (numPlayers == 1){
+			players[0].networkPlayerNumber = nwh.myPlayerNo;    		
+        	for (int i=1; i<4; i++)
+    			players[i].kill();    		
+    	}
+    	if (numPlayers == 2){
+    		players[0].networkPlayerNumber = nwh.myPlayerNo;
+    		players[2].networkPlayerNumber = (nwh.myPlayerNo + 1)%2;
+    		players[1].kill();
+    		players[3].kill();
+    	}
+    	if (numPlayers == 3){
+    		if (nwh.myPlayerNo==0){
+	    		players[0].networkPlayerNumber = 0;
+	    		players[1].networkPlayerNumber = 1;
+	    		players[2].networkPlayerNumber = 2;
+	    		players[3].kill();
+    		} else if (nwh.myPlayerNo==1){
+	    		players[3].networkPlayerNumber = 0;
+	    		players[0].networkPlayerNumber = 1;
+	    		players[1].networkPlayerNumber = 2;
+	    		players[2].kill();
+    		} else if (nwh.myPlayerNo==2){
+	    		players[2].networkPlayerNumber = 0;
+	    		players[3].networkPlayerNumber = 1;
+	    		players[0].networkPlayerNumber = 2;
+	    		players[1].kill();
+    		}
+    	}
+       	if (numPlayers == 4){
+        	for (int i=0; i<4; i++)
+    			players[i].networkPlayerNumber = (nwh.myPlayerNo + i)%4;
+    	}
     	
-        timer.scheduleAtFixedRate(new ScheduleTask(), DELAY, PERIOD);
+		for (int i=0; i<4; i++){
+			if (players[i].networkPlayerNumber==0)
+				hostPlayer = i;
+			
+		}
+
+		// Sending Initial Ball Position
+		if (hostPlayer==0){
+			nwh.sendStateInfo(updateStateOnNetwork(2));
+			nwh.sendStateInfo(updateStateOnNetwork(2));
+			nwh.sendStateInfo(updateStateOnNetwork(2));
+		}		
+
+		timer.scheduleAtFixedRate(new ScheduleTask(), DELAY, PERIOD);
     }
 
     @Override
@@ -107,6 +152,7 @@ public class Board extends JPanel implements Commons {
         if (ingame) {
             
             drawObjects(g2d);
+            showLives(g2d);
         } else {
 
             gameFinished(g2d);
@@ -143,6 +189,18 @@ public class Board extends JPanel implements Commons {
         }
     }
     
+    private void showLives(Graphics2D g2d){
+    	
+        Font font = new Font("Verdana", Font.BOLD, 18);
+        FontMetrics metr = this.getFontMetrics(font);
+
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(font);
+        g2d.drawString("Lives: " + Integer.toString(players[0].lives()),
+                Commons.WIDTH - metr.stringWidth(message),
+                30);    	
+    }
+    
     private void gameFinished(Graphics2D g2d) {
 
         Font font = new Font("Verdana", Font.BOLD, 18);
@@ -173,17 +231,43 @@ public class Board extends JPanel implements Commons {
         @Override
         public void run() {
 
-            ball.move();
+        	ball.move();
             players[0].paddle.move();
             checkCollision();
             checkPaddle();
-            repaint();
             timeCount = (timeCount + 1)%Commons.MAX_COUNT;
             checkShowTimeForPowerUps();
 			
-			String update = updateStateOnNetwork();
-			nwh.sendStateInfo(update);
+			nwh.sendStateInfo(updateStateOnNetwork(1));
+			if (ballInMyArea(ball)){
+//	        	if (timeCount%50==0)
+	        		nwh.sendStateInfo(updateStateOnNetwork(2));
+			}
+			repaint();
         }
+    }
+    
+    private boolean ballInMyArea(Ball ball){
+    	
+    	float x = ball.getX();
+    	float y = ball.getY();
+    	
+    	if (y < Commons.HEIGHT/2)
+    		return false;
+    	
+    	if (x < Commons.WIDTH/2){
+    		if (players[1].isAlive()){
+    			if (y < Commons.HEIGHT - x)
+    				return false;
+    		}    		
+    	} else {
+    		if (players[3].isAlive()){
+    			if (y < x)
+    				return false;    			
+    		}
+    	}
+    	
+    	return true;
     }
     
     private void checkShowTimeForPowerUps(){
@@ -234,8 +318,10 @@ public class Board extends JPanel implements Commons {
         for (int i=0; i<players.length; i++)
 	        if (Physics.ballHitPlayersWall(ball, players[i])){
 	        	//System.out.println("Hit the wall of player " + Integer.toString(i+1));
-	        	if (players[i].isAlive())
-	        		players[i].reduceLife();
+	        	if (i==0 && players[0].isAlive()){
+	        		players[0].reduceLife();
+	        		nwh.sendStateInfo(updateStateOnNetwork(3));
+	        	}
 	        	Physics.reflectBallFromWall(ball, players[i]);
 	        }
         
@@ -257,12 +343,12 @@ public class Board extends JPanel implements Commons {
     
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
 //    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
-    	if (powerUp.powerUpType==0)
-    	{
-    		player.bigPaddle(player.playerNumber);
-    		player.isBigPaddle = true;
-    		paddleTimeCount = 0;
-    	}
+//    	if (powerUp.powerUpType==0)
+//    	{
+//    		player.bigPaddle(player.playerNumber);
+//    		player.isBigPaddle = true;
+//    		paddleTimeCount = 0;
+//    	}
     	if (powerUp.powerUpType==1){
     		player.extraLife();
     		return;
@@ -288,18 +374,66 @@ public class Board extends JPanel implements Commons {
 						players[i].setPaddlePosition(position);
 					}					
 				}
+    	} else if (opCode.equals("b")) {
+    		int playerNumber = Integer.parseInt(data[1]);    	
+    		for (int i=0; i<4; i++)
+				if (players[i].networkPlayerNumber==playerNumber){					
+					int packetNumber = Integer.parseInt(data[2]);
+					if (packetNumber > players[i].networkPacketNumber){
+						players[i].networkPacketNumber = packetNumber;
+						float x = Float.parseFloat(data[3]);
+						float y = Float.parseFloat(data[4]);
+						float dx = Float.parseFloat(data[5]);
+						float dy = Float.parseFloat(data[6]);
+						players[i].setBallPosition(ball, x, y, dx, dy);
+						repaint();
+					}
+				}
+    	} else if (opCode.equals("c")) {
+    		int playerNumber = Integer.parseInt(data[1]);    		
+    		for (int i=0; i<4; i++)
+				if (players[i].networkPlayerNumber==playerNumber){					
+					int packetNumber = Integer.parseInt(data[2]);
+					players[i].networkPacketNumber = packetNumber;
+					int lives = Integer.parseInt(data[3]);
+					players[i].setLives(lives);
+				}
     	}
     }
     
-    public String updateStateOnNetwork (){
+    public String updateStateOnNetwork (int packetType){
+    	
+    	// packetType 1 -> Paddle Position
+    	// packetType 2 -> Ball Position
+    	// packetType 3 -> Life Lost
     	
     	String data = "";
     	
-    	data += "a,";
-    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
-    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
-    	players[0].networkPacketNumber += 1;
-    	data += Float.toString(players[0].paddle.x).concat(",");
+    	if (packetType == 1){
+    	
+	    	data += "a,";
+	    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
+	    	players[0].networkPacketNumber += 1;
+	    	data += Float.toString(players[0].paddle.x).concat(",");
+    	} else if (packetType == 2) {
+    		
+	    	data += "b,";
+	    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
+	    	players[0].networkPacketNumber += 1;
+	    	data += Float.toString(ball.getX()).concat(",");
+	    	data += Float.toString(ball.getY()).concat(",");
+	    	data += Float.toString(ball.getXDir()).concat(",");
+	    	data += Float.toString(ball.getYDir()).concat(",");
+    	} else if (packetType == 3) {
+    		
+	    	data += "c,";
+	    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
+	    	players[0].networkPacketNumber += 1;
+	    	data += Integer.toString(players[0].lives()).concat(",");
+    	}
 
     	return data;
     }

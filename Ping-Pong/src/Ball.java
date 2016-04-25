@@ -4,7 +4,7 @@ public class Ball extends Sprite implements Commons {
 
     private float xdir;
     private float ydir;
-    private float speedup = 0;	
+    private float speedup = (float)1;	
     private int speedupCounter;
 
     public Ball() {
@@ -58,12 +58,5 @@ public class Ball extends Sprite implements Commons {
     
     public float getXDir() {
         return xdir;
-    }
-    
-    public void setPositionAndHeading (float x, float y, float xdir, float ydir){
-    	setX(x);
-    	setY(y);
-    	this.xdir = xdir;
-    	this.ydir = ydir;
     }
 }

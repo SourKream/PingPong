@@ -2,7 +2,7 @@ import java.awt.Graphics2D;
 
 public class Player implements Commons{
 	
-	public int networkPlayerNumber;
+	public int networkPlayerNumber = -1;
 	public int networkPacketNumber = 0;
 	
 	public Paddle paddle;
@@ -36,6 +36,18 @@ public class Player implements Commons{
 	
 	public void reduceLife(){
 		lives = lives - 1;
+	}
+	
+	public void kill(){
+		lives = 0;
+	}
+	
+	public int lives(){
+		return lives;
+	}
+	
+	public void setLives (int l){
+		lives = l;
 	}
 	
 	public void extraLife(){
@@ -80,5 +92,28 @@ public class Player implements Commons{
 		if (playerNumber == 4)
 			paddle.setY(HEIGHT - position - paddle.i_heigth);
 	}	
+
 	
+	public void setBallPosition(Ball ball, float x, float y, float dx, float dy){
+		if (playerNumber == 2){
+			ball.setY(x);
+			ball.setX(WIDTH-y);
+			ball.setYDir(dx);
+			ball.setXDir(-dy);
+		}			
+		
+		if (playerNumber == 3){
+			ball.setX(WIDTH-x);
+			ball.setY(HEIGHT-y);
+			ball.setXDir(-dx);
+			ball.setYDir(-dy);
+		}
+			
+		if (playerNumber == 4){
+			ball.setX(y);
+			ball.setY(HEIGHT-x);
+			ball.setXDir(dy);
+			ball.setYDir(-dx);
+		}
+	}	
 }

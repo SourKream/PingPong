@@ -15,7 +15,7 @@ public class Game extends JFrame {
     }
     
     private void initUI(int i) {
-        board = new Board();
+        board = new Board (2);
         
         Border thickBorder = new LineBorder(Color.RED, Commons.BORDER);
         board.setBorder(thickBorder);
@@ -32,10 +32,10 @@ public class Game extends JFrame {
         setVisible(true);
 		
 		if (i==0){
-			NetworkHandler nwh = new NetworkHandler(board,2);
+			NetworkHandler nwh = new NetworkHandler(board,1);
 		}		
 		else {
-			NetworkHandler nwh = new NetworkHandler(board,2, "localhost", 1231);
+			NetworkHandler nwh = new NetworkHandler(board,1, "localhost", 1231);
 		}
 		
     }
@@ -44,16 +44,9 @@ public class Game extends JFrame {
         
         EventQueue.invokeLater(new Runnable() {
             @Override
-            public void run() { 
-				
-				if (args[0].equals("0")){               
-                Game game = new Game(0);
+            public void run() { 				
+                Game game = new Game(Integer.parseInt(args[0]));
                 game.setVisible(true); 
-				}
-				else{
-	                Game game = new Game(1);
-	                game.setVisible(true); 
-				}               
             }
         });
     }
