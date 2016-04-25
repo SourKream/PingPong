@@ -23,22 +23,22 @@ public class PowerUp extends Sprite implements Commons {
 		
 		ImageIcon ii;
 		switch(PowerUpType){
-		case 0: ii = new ImageIcon("res/BigPaddle.png");
+		case 0: ii = new ImageIcon("../res/BigPaddle.png");
 				description = "Big Paddle";
 				break;
-		case 1: ii = new ImageIcon("res/ExtraLife.png");
+		case 1: ii = new ImageIcon("../res/ExtraLife.png");
 				description = "Extra Life";
 				break;
-		case 2: ii = new ImageIcon("res/MultiBall.png");
+		case 2: ii = new ImageIcon("../res/MultiBall.png");
 				description = "Multi Ball";
 				break;
-		case 3: ii = new ImageIcon("res/Shield.png");
+		case 3: ii = new ImageIcon("../res/Shield.png");
 				description = "Shield";
 				break;
-		case 4: ii = new ImageIcon("res/FastBall.png");
+		case 4: ii = new ImageIcon("../res/FastBall.png");
 				description = "Fast Ball";
 				break;
-		default: ii = new ImageIcon("res/BigPaddle.png");
+		default: ii = new ImageIcon("../res/BigPaddle.png");
 		}		
 
         image = ii.getImage();

@@ -241,7 +241,6 @@ public class Board extends JPanel implements Commons {
 			
 			nwh.sendStateInfo(updateStateOnNetwork(1));
 			if (ballInMyArea(ball)){
-//	        	if (timeCount%50==0)
 	        		nwh.sendStateInfo(updateStateOnNetwork(2));
 			}
 			repaint();
@@ -352,14 +351,14 @@ public class Board extends JPanel implements Commons {
     }
     
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
-//    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
-//    	if (powerUp.powerUpType==0)
-//    	{
-//    		player.bigPaddle(player.playerNumber);
-//    		player.hasBigPaddle = true;
-//    		paddleTimeCount = 0;
-//    		return;
-//    	}
+    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
+    	if (powerUp.powerUpType==0)
+    	{
+    		player.bigPaddle(player.playerNumber);
+    		player.hasBigPaddle = true;
+    		paddleTimeCount = 0;
+    		return;
+    	}
     	if (powerUp.powerUpType==1){
     		player.extraLife();
     		return;
