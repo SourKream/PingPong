@@ -109,8 +109,17 @@ public class Board extends JPanel implements Commons {
 			nwh.sendStateInfo(updateStateOnNetwork(2));
 			nwh.sendStateInfo(updateStateOnNetwork(2));
 			nwh.sendStateInfo(updateStateOnNetwork(2));
-		}		
+			nwh.sendStateInfo(updateStateOnNetwork(2));
+			nwh.sendStateInfo(updateStateOnNetwork(2));
 
+		// Send Power Up Info
+	        for (int i=0; i<Commons.NUM_POWER_UPS; i++){
+				nwh.sendStateInfo(updateStateOnNetwork(4,i));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,i));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,i));	        	
+	        }
+		}		
+		
 		timer.scheduleAtFixedRate(new ScheduleTask(), DELAY, PERIOD);
     }
 
@@ -350,6 +359,8 @@ public class Board extends JPanel implements Commons {
         	}	       
     }
     
+    // TODO: Application of PowerUp to the correct player
+    // TODO: PowerUp Applied data packet
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
     	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
     	if (powerUp.powerUpType==0)
@@ -414,6 +425,17 @@ public class Board extends JPanel implements Commons {
 					int lives = Integer.parseInt(data[3]);
 					players[i].setLives(lives);
 				}
+    	} else if (opCode.equals("d")) {
+    		int playerNumber = Integer.parseInt(data[1]);    		
+			if (playerNumber==0){					
+				int index = Integer.parseInt(data[2]);
+				int powerUpType = Integer.parseInt(data[3]);
+				int x = Integer.parseInt(data[4]);
+				int y = Integer.parseInt(data[5]);
+				int showTime = Integer.parseInt(data[6]);
+								
+				powerUps[index] = players[hostPlayer].addPowerUpToGame(powerUpType, x, y, showTime);
+			}
     	}
     }
     
@@ -422,6 +444,7 @@ public class Board extends JPanel implements Commons {
     	// packetType 1 -> Paddle Position
     	// packetType 2 -> Ball Position
     	// packetType 3 -> Life Lost
+        // packetType 4 -> PowerUp Data
     	
     	String data = "";
     	
@@ -449,8 +472,26 @@ public class Board extends JPanel implements Commons {
 	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
 	    	players[0].networkPacketNumber += 1;
 	    	data += Integer.toString(players[0].lives()).concat(",");
-    	}
+    	} 
 
+    	return data;
+    }
+    
+    public String updateStateOnNetwork (int packetType, int powerUpNum){
+    	
+        // packetType 4 -> New PowerUp Data
+    	
+    	String data = "";
+    	if (packetType == 4) {
+            
+            data += "d,";
+            data += Integer.toString(players[0].networkPlayerNumber).concat(",");
+            data += Integer.toString(powerUpNum).concat(",");
+            data += Integer.toString(powerUps[powerUpNum].powerUpType).concat(",");
+            data += Integer.toString((int)powerUps[powerUpNum].getX()).concat(",");
+            data += Integer.toString((int)powerUps[powerUpNum].getY()).concat(",");
+            data += Integer.toString(powerUps[powerUpNum].showTime).concat(",");
+        }
     	return data;
     }
 }

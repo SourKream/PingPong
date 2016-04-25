@@ -102,23 +102,45 @@ public class Player implements Commons{
 	public void setBallPosition(Ball ball, float x, float y, float dx, float dy){
 		if (playerNumber == 2){
 			ball.setY(x);
-			ball.setX(WIDTH-y);
+			ball.setX(WIDTH-y-ball.i_width);
 			ball.setYDir(dx);
 			ball.setXDir(-dy);
 		}			
 		
 		if (playerNumber == 3){
-			ball.setX(WIDTH-x);
-			ball.setY(HEIGHT-y);
+			ball.setX(WIDTH-x-ball.i_width);
+			ball.setY(HEIGHT-y-ball.i_heigth);
 			ball.setXDir(-dx);
 			ball.setYDir(-dy);
 		}
 			
 		if (playerNumber == 4){
 			ball.setX(y);
-			ball.setY(HEIGHT-x);
+			ball.setY(HEIGHT-x-ball.i_heigth);
 			ball.setXDir(dy);
 			ball.setYDir(-dx);
 		}
 	}	
+	
+	public PowerUp addPowerUpToGame(int PowerUpType, int x, int y, int ShowTime){
+		
+		PowerUp powerUp = new PowerUp(PowerUpType, x, y, ShowTime);
+
+		if (playerNumber == 2){
+			powerUp.setY(x);
+			powerUp.setX(WIDTH-y-powerUp.i_width);
+		}			
+		
+		if (playerNumber == 3){
+			powerUp.setX(WIDTH-x-powerUp.i_width);
+			powerUp.setY(HEIGHT-y-powerUp.i_heigth);
+		}
+			
+		if (playerNumber == 4){
+			powerUp.setX(y);
+			powerUp.setY(HEIGHT-x-powerUp.i_heigth);
+		}
+
+		return powerUp;
+	}
 }

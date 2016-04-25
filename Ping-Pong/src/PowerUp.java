@@ -12,7 +12,7 @@ public class PowerUp extends Sprite implements Commons {
 */
 	
 	private boolean isActive = false;
-	private int showTime;
+	public int showTime;
 	public int powerUpType;
 	public String description;
 	
