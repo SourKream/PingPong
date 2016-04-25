@@ -6,18 +6,16 @@ public class Paddle extends Sprite implements Commons {
     private int dx;
     public int movingAxis; // 0 for x-axis and 1 for y-axis
 
-    public Paddle (int axis, int initX, int initY, int paddleType) {
+    public Paddle (int axis, float initX, float initY, int paddleType) {
 
     	ImageIcon ii;
-    	if(paddleType==1)
-    	{
+    	if(paddleType==1) {
 	    	if (axis==0)
 	    		ii = new ImageIcon("../res/paddleH.png");
 	    	else 
 	    		ii = new ImageIcon("../res/paddleV.png");
     	}
-    	else
-    	{
+    	else {
     		if (axis==0)
 	    		ii = new ImageIcon("../res/paddleH_big.png");
 	    	else 
@@ -80,8 +78,7 @@ public class Paddle extends Sprite implements Commons {
     		setY(position);
     }
     
-    public int getAxis()
-    {
+    public int getAxis() {
     	return movingAxis;
     }
 }

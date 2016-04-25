@@ -21,8 +21,6 @@ public class Board extends JPanel implements Commons {
 
     private Timer timer;
     private int timeCount;
-    private int paddleTimeCount;
-    private int shieldTimeCount;
     private String message = "Game Over";
     private Ball ball;
     private Player players[];
@@ -284,31 +282,20 @@ public class Board extends JPanel implements Commons {
     		powerUps[i].checkShowTime(timeCount);
     }
     
-    private void checkPaddle()
-    {
-    	for(int i=0; i<4; i++)
-    	{
-    		if(players[i].hasBigPaddle)
-        	{
-        		paddleTimeCount += 1;
-        		if(paddleTimeCount == Commons.POWER_UP_TIME)
-        		{
-        			players[i].hasBigPaddle = false;
-        			players[i].smallPaddle(i+1);
-        			paddleTimeCount = 0;
-        		}
+    private void checkPaddle(){
+
+    	for(int i=0; i<4; i++){
+    		if(players[i].hasBigPaddle){
+        		players[i].bigPaddleTimeCounter += 1;
+        		if(players[i].bigPaddleTimeCounter == Commons.POWER_UP_TIME)
+        			players[i].setSmallPaddle();
         	}	
-    		if(players[i].hasShield)
-        	{
-        		shieldTimeCount += 1;
-        		if(shieldTimeCount == Commons.POWER_UP_TIME)
-        		{
+    		if(players[i].hasShield){
+        		players[i].shieldTimeCounter += 1;
+        		if(players[i].shieldTimeCounter == Commons.POWER_UP_TIME)
         			players[i].hasShield = false;
-        			shieldTimeCount = 0;
-        		}
         	}
-    	}
-    	    			
+    	}   	    			
     }
 
     private void stopGame() {
@@ -363,26 +350,18 @@ public class Board extends JPanel implements Commons {
     // TODO: PowerUp Applied data packet
     private void ApplyPowerUpToPlayer (PowerUp powerUp, Player player){
     	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(player.playerNumber));
-    	if (powerUp.powerUpType==0)
-    	{
-    		player.bigPaddle(player.playerNumber);
-    		player.hasBigPaddle = true;
-    		paddleTimeCount = 0;
-    		return;
-    	}
-    	if (powerUp.powerUpType==1){
-    		player.extraLife();
-    		return;
-    	}
-    	if(powerUp.powerUpType==3)
-    	{
-    		player.hasShield = true;
-    		shieldTimeCount = 0;
-    		return;
-    	}
-    	if (powerUp.powerUpType==4){
-    		ball.increaseSpeed();
-    		return;
+    	
+    	switch(powerUp.powerUpType){
+    	case 0: player.setBigPaddle();
+    			break;
+    	case 1: player.extraLife();
+    			break;
+    	case 3: player.hasShield = true;
+				player.shieldTimeCounter = 0;
+    			break;
+    	case 4: ball.increaseSpeed();
+    			break;
+    	default :
     	}
     }
     
