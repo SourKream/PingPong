@@ -3,7 +3,7 @@ import javax.swing.ImageIcon;
 
 public class Paddle extends Sprite implements Commons {
 
-    private int dx;
+    private int dx = 0;
     public int movingAxis; // 0 for x-axis and 1 for y-axis
 
     public Paddle (int axis, float initX, float initY, int paddleType) {
@@ -33,20 +33,26 @@ public class Paddle extends Sprite implements Commons {
 
     public void move() {
 
-        x += dx;
+    	if (movingAxis == 0){
+    		x += dx;
 
-        if (x <= BORDER + SIZE + 2) {
-            x = BORDER + SIZE + 2;
-        }
-
-        if (x >= WIDTH - i_width - BORDER - SIZE - 2) {
-            x = WIDTH - i_width - BORDER - SIZE - 2;
-        }
+	        if (x <= BORDER + SIZE + 2) {
+	            x = BORDER + SIZE + 2;
+	        } else if (x >= WIDTH - i_width - BORDER - SIZE - 2) {
+	            x = WIDTH - i_width - BORDER - SIZE - 2;
+	        }
+    	} else {
+    		y += dx;
+    		
+	        if (y <= BORDER + SIZE + 2) {
+	            y = BORDER + SIZE + 2;
+	        } else if (y >= HEIGHT - i_heigth - BORDER - SIZE - 2) {
+	            y = HEIGHT - i_heigth - BORDER - SIZE - 2;
+	        }
+    	}
     }
 
-    public void keyPressed(KeyEvent e) {
-
-        int key = e.getKeyCode();
+    public void keyPressed(int key) {
 
         if (key == KeyEvent.VK_LEFT) {
             dx = -1;
@@ -57,9 +63,7 @@ public class Paddle extends Sprite implements Commons {
         }
     }
 
-    public void keyReleased(KeyEvent e) {
-
-        int key = e.getKeyCode();
+    public void keyReleased(int key) {
 
         if (key == KeyEvent.VK_LEFT) {
             dx = 0;

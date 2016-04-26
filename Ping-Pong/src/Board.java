@@ -22,8 +22,9 @@ public class Board extends JPanel implements Commons {
     private Timer timer;
     private int timeCount;
     private String message = "Game Over";
-    private Ball ball;
+    public Ball ball;
     private Player players[];
+    public List<Integer> PlayersInMyControl = new ArrayList<>();
     private int numPlayers = 1;
     private Corners corner[];
     public boolean ingame = true;
@@ -104,17 +105,17 @@ public class Board extends JPanel implements Commons {
 
 		// Sending Initial Ball Position
 		if (hostPlayer==0){
-			nwh.sendStateInfo(updateStateOnNetwork(2));
-			nwh.sendStateInfo(updateStateOnNetwork(2));
-			nwh.sendStateInfo(updateStateOnNetwork(2));
-			nwh.sendStateInfo(updateStateOnNetwork(2));
-			nwh.sendStateInfo(updateStateOnNetwork(2));
+			nwh.sendStateInfo(updateStateOnNetwork(2,0));
+			nwh.sendStateInfo(updateStateOnNetwork(2,0));
+			nwh.sendStateInfo(updateStateOnNetwork(2,0));
+			nwh.sendStateInfo(updateStateOnNetwork(2,0));
+			nwh.sendStateInfo(updateStateOnNetwork(2,0));
 
 		// Send Power Up Info
 	        for (int i=0; i<Commons.NUM_POWER_UPS; i++){
-				nwh.sendStateInfo(updateStateOnNetwork(4,i));	        	
-				nwh.sendStateInfo(updateStateOnNetwork(4,i));	        	
-				nwh.sendStateInfo(updateStateOnNetwork(4,i));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,i,0));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,i,0));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,i,0));	        	
 	        }
 		}		
 		
@@ -129,6 +130,9 @@ public class Board extends JPanel implements Commons {
     }
 
     private void gameInit() {
+    	
+    	PlayersInMyControl.clear();
+    	PlayersInMyControl.add(0);
 
         ball = new Ball();
         players = new Player[4];
@@ -225,12 +229,12 @@ public class Board extends JPanel implements Commons {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            players[0].paddle.keyReleased(e);
+    		players[0].paddle.keyReleased(e.getKeyCode());
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
-            players[0].paddle.keyPressed(e);
+    		players[0].paddle.keyPressed(e.getKeyCode());
         }
     }
 
@@ -240,15 +244,17 @@ public class Board extends JPanel implements Commons {
         public void run() {
 
         	ball.move();
-            players[0].paddle.move();
+            for (int i=0; i<PlayersInMyControl.size(); i++){
+            	players[PlayersInMyControl.get(i)].paddle.move();
+            	nwh.sendStateInfo(updateStateOnNetwork(1,i));
+            }
             checkCollision();
             checkPaddle();
             timeCount = (timeCount + 1)%Commons.MAX_COUNT;
             checkShowTimeForPowerUps();
 			
-			nwh.sendStateInfo(updateStateOnNetwork(1));
 			if (ballInMyArea(ball)){
-	        		nwh.sendStateInfo(updateStateOnNetwork(2));
+	        		nwh.sendStateInfo(updateStateOnNetwork(2,0));
 			}
 			repaint();
         }
@@ -323,9 +329,9 @@ public class Board extends JPanel implements Commons {
         for (int i=0; i<players.length; i++)
 	        if (Physics.ballHitPlayersWall(ball, players[i])){
 	        	//System.out.println("Hit the wall of player " + Integer.toString(i+1));
-	        	if (i==0 && players[0].isAlive()){
-	        		players[0].reduceLife();
-	        		nwh.sendStateInfo(updateStateOnNetwork(3));
+	        	if (PlayersInMyControl.contains(i) && players[i].isAlive()){
+	        		players[i].reduceLife();
+	        		nwh.sendStateInfo(updateStateOnNetwork(3,i));
 	        	}
 	        	Physics.reflectBallFromWall(ball, players[i]);
 	        }
@@ -418,7 +424,7 @@ public class Board extends JPanel implements Commons {
     	}
     }
     
-    public String updateStateOnNetwork (int packetType){
+    public String updateStateOnNetwork (int packetType, int playerNumber){
     	
     	// packetType 1 -> Paddle Position
     	// packetType 2 -> Ball Position
@@ -430,10 +436,10 @@ public class Board extends JPanel implements Commons {
     	if (packetType == 1){
     	
 	    	data += "a,";
-	    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
-	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
-	    	players[0].networkPacketNumber += 1;
-	    	data += Float.toString(players[0].paddle.x).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
+	    	players[playerNumber].networkPacketNumber += 1;
+	    	data += Float.toString(players[playerNumber].paddle.x).concat(",");
     	} else if (packetType == 2) {
     		
 	    	data += "b,";
@@ -447,16 +453,16 @@ public class Board extends JPanel implements Commons {
     	} else if (packetType == 3) {
     		
 	    	data += "c,";
-	    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
-	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
-	    	players[0].networkPacketNumber += 1;
-	    	data += Integer.toString(players[0].lives()).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
+	    	players[playerNumber].networkPacketNumber += 1;
+	    	data += Integer.toString(players[playerNumber].lives()).concat(",");
     	} 
 
     	return data;
     }
     
-    public String updateStateOnNetwork (int packetType, int powerUpNum){
+    public String updateStateOnNetwork (int packetType, int playerNumber, int powerUpNum){
     	
         // packetType 4 -> New PowerUp Data
     	
