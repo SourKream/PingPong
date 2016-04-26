@@ -24,6 +24,7 @@ public class NetworkHandler
 	private Timer timer;					// for detecting drops during game
 	private long  startTime;
 	private boolean gameStart;
+	private Thread updateThread;
 				
 	public NetworkHandler(Board board, int connectedPlayers)
 	{
@@ -87,8 +88,8 @@ public class NetworkHandler
 		catch(Exception e){System.out.print("Host: Could not initialise out_port");}
 		
 		// starting network update thread
-		Thread updateThread = new Thread(updateGameState);
-        updateThread.start();
+		updateThread = new Thread(updateGameState);
+        //updateThread.start();
 		
 		// ready to roll => sending start signal to all players and starting my game
 		for (int i = 0 ; i<connectedPlayers ; i++)
@@ -180,7 +181,7 @@ public class NetworkHandler
 		{
 			// preparing an empty packet to send to host
 			skt_in = new DatagramSocket();
-			skt_in.setSoTimeout(10000);
+			skt_in.setSoTimeout(5000);
 			
 			// empty ('hello') packet that will be sent to the host first
 			byte[] buf 			  = new byte[256];
@@ -221,8 +222,8 @@ public class NetworkHandler
 		catch(Exception e){System.out.print("Client: could not initialise out_port");}
 		
 		// starting network update thread
-		Thread updateThread = new Thread(updateGameState);
-        updateThread.start();
+		updateThread = new Thread(updateGameState);
+        //updateThread.start();
 		
 		// informing I'm ready to start
 		sendReadySignal();	
@@ -314,14 +315,16 @@ public class NetworkHandler
 			{		
 				
 				// wait for game to start, else receives unnecessary messages!
-				while (!gameStart) {}
-
+				//System.out.println("LISTEN THREAD: waiting for game to start");
+				//while (!gameStart) {System.out.println("still in loop");}
+				//System.out.println("LISTEN THREAD: IGI");
+				
 				try
 				{
 					while (board.ingame)		// while game is not over
 					{
 						byte[] buf = new byte[256];
-						DatagramPacket packet = new DatagramPacket(buf, buf.length);
+						DatagramPacket packet = new DatagramPacket(buf, buf.length);						
 						skt_in.receive(packet);
 						String update = new String(packet.getData());
 						
@@ -348,7 +351,7 @@ public class NetworkHandler
 	{
 		// assumes , separated packets and the second number is the player number
 		String data[] = update.split(",");
-		System.out.println(update);
+		//System.out.println(update);
 		int curPlayerNo   = Integer.parseInt(data[1]);	// 0, 1, 2...
 		
 		int index = (curPlayerNo <= myPlayerNo) ? curPlayerNo : curPlayerNo-1;				
@@ -388,9 +391,10 @@ public class NetworkHandler
 		isInGame     = new boolean[connectedPlayers];				
 		Arrays.fill(lastReceived,System.currentTimeMillis());
 		Arrays.fill(isInGame,true);	
-		
+		System.out.println("Imma set gameStart = true");
 		gameStart = true;
-		
+		updateThread.start();
+		System.out.println("Ive set gameStart = true");
         board.startGame();
 	}
 	
