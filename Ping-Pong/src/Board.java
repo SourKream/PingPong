@@ -118,9 +118,11 @@ public class Board extends JPanel implements Commons {
 
 		// Send Power Up Info
 	        for (int i=0; i<Commons.NUM_POWER_UPS; i++){
-				nwh.sendStateInfo(updateStateOnNetwork(4,i,0));	        	
-				nwh.sendStateInfo(updateStateOnNetwork(4,i,0));	        	
-				nwh.sendStateInfo(updateStateOnNetwork(4,i,0));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,0,i));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,0,i));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,0,i));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,0,i));	        	
+				nwh.sendStateInfo(updateStateOnNetwork(4,0,i));	        	
 	        }
 		}		
 		
@@ -339,7 +341,7 @@ public class Board extends JPanel implements Commons {
         		if (powerUps[i].getRect().intersects(ball.getRect())){
         			powerUps[i].Disable();
         			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
-		        	if (PlayersInMyControl.contains(i))
+		        	if (PlayersInMyControl.contains(lastPlayerToHitTheBall))
 		        		nwh.sendStateInfo(updateStateOnNetwork(6,lastPlayerToHitTheBall,i));
         			return;
         		}
@@ -390,7 +392,7 @@ public class Board extends JPanel implements Commons {
     			}
     			break;
     	case 3: if (!players[playerIndex].hasShield){
-			System.out.println("CONFLICT IN POWER UP");
+    				System.out.println("CONFLICT IN POWER UP");
 	    			players[playerIndex].hasShield = true;
 					players[playerIndex].shieldTimeCounter = 0;
     			}
