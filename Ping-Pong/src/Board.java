@@ -327,6 +327,8 @@ public class Board extends JPanel implements Commons {
         	if (players[i].isAlive())
 		        if ((ball.getRect()).intersects(players[i].paddle.getRect())){
 		        	lastPlayerToHitTheBall = i;
+		        	if (PlayersInMyControl.contains(i))
+		        		nwh.sendStateInfo(updateStateOnNetwork(5,i));
 		        	Physics.reflectBallFromPaddle(ball, players[i].paddle);
 		        	return;
 		        }
@@ -337,6 +339,8 @@ public class Board extends JPanel implements Commons {
         		if (powerUps[i].getRect().intersects(ball.getRect())){
         			powerUps[i].Disable();
         			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
+		        	if (PlayersInMyControl.contains(i))
+		        		nwh.sendStateInfo(updateStateOnNetwork(6,lastPlayerToHitTheBall,i));
         			return;
         		}
 
@@ -378,12 +382,34 @@ public class Board extends JPanel implements Commons {
     	}
     }
     
+    private void checkPowerUpApplicationToPlayer (int powerUpIndex, int playerIndex){
+    	switch(powerUps[powerUpIndex].powerUpType){
+    	case 0: if (!players[playerIndex].hasBigPaddle){
+    				System.out.println("CONFLICT IN POWER UP");
+    				players[playerIndex].setBigPaddle();
+    			}
+    			break;
+    	case 3: if (!players[playerIndex].hasShield){
+			System.out.println("CONFLICT IN POWER UP");
+	    			players[playerIndex].hasShield = true;
+					players[playerIndex].shieldTimeCounter = 0;
+    			}
+    			break;
+    	case 4: if (ball.speedup != Commons.BALL_FAST_SPEED){
+					System.out.println("CONFLICT IN POWER UP");
+					ball.increaseSpeed();
+		    	}
+		    	break;
+    	default :
+    	}    	
+    }
+    
     public void updateStateFromNetwork (String inputString){
 
     	String data[] = inputString.split(",");
     	String opCode = data[0];
     	if (opCode.equals("a")){
-    		int playerNumber = Integer.parseInt(data[1]);    		
+    		int playerNumber = Integer.parseInt(data[1].trim());    		
     		for (int i=0; i<4; i++)
 				if (players[i].getNetworkPlayerNumber()==playerNumber){					
 					int packetNumber = Integer.parseInt(data[2]);
@@ -394,10 +420,10 @@ public class Board extends JPanel implements Commons {
 					}					
 				}
     	} else if (opCode.equals("b")) {
-    		int playerNumber = Integer.parseInt(data[1]);    	
+    		int playerNumber = Integer.parseInt(data[1].trim());    	
     		for (int i=0; i<4; i++)
 				if (players[i].getNetworkPlayerNumber()==playerNumber){					
-					int packetNumber = Integer.parseInt(data[2]);
+					int packetNumber = Integer.parseInt(data[2].trim());
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
 						float x = Float.parseFloat(data[3]);
@@ -409,25 +435,46 @@ public class Board extends JPanel implements Commons {
 					}
 				}
     	} else if (opCode.equals("c")) {
-    		int playerNumber = Integer.parseInt(data[1]);    		
+    		int playerNumber = Integer.parseInt(data[1].trim());    		
     		for (int i=0; i<4; i++)
 				if (players[i].getNetworkPlayerNumber()==playerNumber){					
-					int packetNumber = Integer.parseInt(data[2]);
+					int packetNumber = Integer.parseInt(data[2].trim());
 					players[i].networkPacketNumber = packetNumber;
-					int lives = Integer.parseInt(data[3]);
+					int lives = Integer.parseInt(data[3].trim());
 					players[i].setLives(lives);
 				}
     	} else if (opCode.equals("d")) {
-    		int playerNumber = Integer.parseInt(data[1]);    		
+    		int playerNumber = Integer.parseInt(data[1].trim());    		
 			if (playerNumber==0){					
-				int index = Integer.parseInt(data[2]);
-				int powerUpType = Integer.parseInt(data[3]);
-				int x = Integer.parseInt(data[4]);
-				int y = Integer.parseInt(data[5]);
-				int showTime = Integer.parseInt(data[6]);
+				int index = Integer.parseInt(data[2].trim());
+				int powerUpType = Integer.parseInt(data[3].trim());
+				int x = Integer.parseInt(data[4].trim());
+				int y = Integer.parseInt(data[5].trim());
+				int showTime = Integer.parseInt(data[6].trim());
 								
 				powerUps[index] = players[hostPlayer].addPowerUpToGame(powerUpType, x, y, showTime);
 			}
+    	} else if (opCode.equals("e")) {
+    		int playerNumber = Integer.parseInt(data[1].trim());    		
+    		for (int i=0; i<4; i++)
+				if (players[i].getNetworkPlayerNumber()==playerNumber){					
+					int packetNumber = Integer.parseInt(data[2].trim());
+					players[i].networkPacketNumber = packetNumber;
+					if (lastPlayerToHitTheBall != i){
+						System.out.println("Disagreement with last player to hit the ball");
+						lastPlayerToHitTheBall = i;
+					}
+				}
+    	} else if (opCode.equals("f")) {
+    		System.out.println("SOME POWERUP INFO RECEIVED");
+    		int playerNumber = Integer.parseInt(data[1].trim());    		
+    		for (int i=0; i<4; i++)
+				if (players[i].getNetworkPlayerNumber()==playerNumber){		
+					int packetNumber = Integer.parseInt(data[2].trim());
+					players[i].networkPacketNumber = packetNumber;
+					int powerUpIndex = Integer.parseInt(data[3].trim());
+					checkPowerUpApplicationToPlayer(powerUpIndex, i);
+				}
     	}
     }
     
@@ -437,6 +484,7 @@ public class Board extends JPanel implements Commons {
     	// packetType 2 -> Ball Position
     	// packetType 3 -> Life Lost
         // packetType 4 -> PowerUp Data
+        // packetType 5 -> Set Last Player to hit the ball
     	
     	String data = "";
     	
@@ -464,6 +512,12 @@ public class Board extends JPanel implements Commons {
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
 	    	data += Integer.toString(players[playerNumber].lives()).concat(",");
+    	} else if (packetType == 5) {
+    		
+	    	data += "e,";
+	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
+	    	players[playerNumber].networkPacketNumber += 1;
     	} 
 
     	return data;
@@ -472,6 +526,7 @@ public class Board extends JPanel implements Commons {
     public String updateStateOnNetwork (int packetType, int playerNumber, int powerUpNum){
     	
         // packetType 4 -> New PowerUp Data
+        // packetType 6 -> PowerUp Applied to Player
     	
     	String data = "";
     	if (packetType == 4) {
@@ -483,7 +538,14 @@ public class Board extends JPanel implements Commons {
             data += Integer.toString((int)powerUps[powerUpNum].getX()).concat(",");
             data += Integer.toString((int)powerUps[powerUpNum].getY()).concat(",");
             data += Integer.toString(powerUps[powerUpNum].showTime).concat(",");
-        }
+        } else if (packetType == 6) {
+    		
+	    	data += "f,";
+	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
+	    	players[playerNumber].networkPacketNumber += 1;
+	    	data += Integer.toString(powerUpNum);
+    	}
     	return data;
     }
 }

@@ -13,7 +13,7 @@ public interface Commons {
     public static final int PERIOD = 15;
     public static final int SIZE = 40;		//Corner Size
     public static final int INIT_LIVES = 5;
-    public static final int MAX_COUNT = 25000;
+    public static final int MAX_COUNT = 2500;
     public static final int POWER_UP_TIME = 2500;
     public static final int NUM_POWER_UPS = 10;
     public static final int FAST_BALL_TIME = 700;
