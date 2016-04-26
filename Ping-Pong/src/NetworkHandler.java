@@ -214,6 +214,7 @@ public class NetworkHandler
 		
 		// received data from other players, filling playerAddresses and playerPorts
 		setPNoAddressPorts(ackdata, hostAddress, hostPort);
+		System.out.println("got acknowledgement: " + ackdata);
 		
 		// initialising skt_out
 		try	{skt_out = new DatagramSocket();}		
@@ -347,6 +348,7 @@ public class NetworkHandler
 	{
 		// assumes , separated packets and the second number is the player number
 		String data[] = update.split(",");
+		System.out.println(update);
 		int curPlayerNo   = Integer.parseInt(data[1]);	// 0, 1, 2...
 		
 		int index = (curPlayerNo <= myPlayerNo) ? curPlayerNo : curPlayerNo-1;				
