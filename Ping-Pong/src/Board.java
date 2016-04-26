@@ -23,7 +23,7 @@ public class Board extends JPanel implements Commons {
     private int timeCount;
     private String message = "Game Over";
     public Ball ball;
-    private Player players[];
+	public Player players[];
     public List<Integer> PlayersInMyControl = new ArrayList<>();
     private int numPlayers = 1;
     private Corners corner[];

@@ -1,5 +1,8 @@
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NetworkHandler
 {
@@ -15,8 +18,12 @@ public class NetworkHandler
 	private InetAddress[] playerAddresses;	// addresses for UDP
 	private int[]	 	  playerPorts;		// ports for UDP
 	
-	private Runnable updateGameState;
-	
+	private Runnable   updateGameState;
+	private long[]     lastReceived; 
+	private boolean[] isInGame;
+	private Timer timer;					// for detecting drops during game
+	private long  startTime;
+				
 	public NetworkHandler(Board board, int connectedPlayers)
 	{
 		this.board  = board;
@@ -25,6 +32,7 @@ public class NetworkHandler
 		this.playerAddresses  = new InetAddress[connectedPlayers];
 		this.playerPorts      = new int[connectedPlayers];	
 		this.myPlayerNo       = 0;
+		this.timer			  = new Timer();
 		
 		this.board.setNWH(this);
 			
@@ -39,6 +47,7 @@ public class NetworkHandler
 		this.connectedPlayers = connectedPlayers;
 		this.playerAddresses  = new InetAddress[connectedPlayers];
 		this.playerPorts      = new int[connectedPlayers];				
+		this.timer			  = new Timer();
 		
 		this.board.setNWH(this);
 		
@@ -298,7 +307,14 @@ public class NetworkHandler
 		{
 			@Override
 			public void run()
-			{
+			{	
+				// maintaining last receieved stats
+				lastReceived = new long[connectedPlayers];
+				isInGame     = new boolean[connectedPlayers];				
+				Arrays.fill(lastReceived,System.currentTimeMillis());
+				Arrays.fill(isInGame,true);			
+				timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
+				
 				try
 				{
 					while (board.ingame)		// change to while game is not over
@@ -312,6 +328,9 @@ public class NetworkHandler
 						//System.out.println("received: " + update);
 						// call board update functions
 						board.updateStateFromNetwork(update);
+						
+						updateTimeStamp(packet.getAddress(),packet.getPort());
+						
 					}
 				}
 				
@@ -324,9 +343,40 @@ public class NetworkHandler
 		};
 	}
 	
+	private void updateTimeStamp(InetAddress address, int port)
+	{
+		int j = 0;
+		for (int i = 0 ; i < connectedPlayers ; i++)
+			if (playerAddresses[i]==address && playerPorts[i]==port)
+				j = 1;
+		
+		lastReceived[j] = System.currentTimeMillis();
+					
+	}
+	
+    private class DropCheckTimer extends TimerTask {
+
+        @Override
+        public void run() {
+			long curTime = System.currentTimeMillis();
+			// to call currentTimeMillis only once, using lastReceived[j]
+			for (int i = 0 ; i < connectedPlayers ; i++)
+			{
+				int curPlayerNo = (i>=myPlayerNo) ? i+1 : i;
+				
+				if ((curTime - startTime > 3000) && board.players[curPlayerNo].isAlive() && isInGame[i] && (curTime - lastReceived[i] > 1000))
+				{
+					isInGame[i] = false;
+					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
+				}
+			}
+        }
+    }
+	
 	private void startGame()
 	{
 		System.out.println("starting my game");
+		startTime = System.currentTimeMillis();
         board.startGame();
 	}
 	
