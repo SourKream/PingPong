@@ -4,7 +4,7 @@ public class Ball extends Sprite implements Commons {
 
     private float xdir;
     private float ydir;
-    private float speedup = (float)6;	
+    private float speedup = (float)2;	
     private int speedupCounter;
 
     public Ball() {
