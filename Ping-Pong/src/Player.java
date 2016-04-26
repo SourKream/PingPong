@@ -21,13 +21,13 @@ public class Player implements Commons{
 		playerNumber = num;
 		lives = INIT_LIVES;
 		switch(num){
-		case 1: paddle = new Paddle(0, WIDTH/2, BOTTOM_EDGE - 8, 1);
+		case 1: paddle = new Paddle(0, WIDTH/2, BOTTOM_EDGE - 10, playerNumber);
 				break;
-		case 2: paddle = new Paddle(1, BORDER, HEIGHT/2, 1);
+		case 2: paddle = new Paddle(1, BORDER, HEIGHT/2, playerNumber);
 				break;
-		case 3: paddle = new Paddle(0, WIDTH/2, BORDER, 1);
+		case 3: paddle = new Paddle(0, WIDTH/2, BORDER, playerNumber);
 				break;
-		case 4: paddle = new Paddle(1, WIDTH - 8 - BORDER, HEIGHT/2, 1);
+		case 4: paddle = new Paddle(1, WIDTH - 10 - BORDER, HEIGHT/2, playerNumber);
 				break;
 		}
 	}
@@ -65,31 +65,13 @@ public class Player implements Commons{
 	{
 		hasBigPaddle = true;
 		bigPaddleTimeCounter = 0;
-		switch(playerNumber){
-		case 1: paddle = new Paddle(0, paddle.getX(), BOTTOM_EDGE - 8, 2);
-				break;
-		case 2: paddle = new Paddle(1, BORDER, paddle.getY(), 2);
-				break;
-		case 3: paddle = new Paddle(0, paddle.getX(), BORDER, 2);
-				break;
-		case 4: paddle = new Paddle(1, WIDTH - 8 - BORDER, paddle.getY(), 2);
-				break;
-		}
+		paddle.makeBig();
 	}
 	
 	public void setSmallPaddle()
 	{
 		hasBigPaddle = false;
-		switch(playerNumber){
-		case 1: paddle = new Paddle(0, paddle.getX(), BOTTOM_EDGE - 8, 1);
-				break;
-		case 2: paddle = new Paddle(1, BORDER, paddle.getY(), 1);
-				break;
-		case 3: paddle = new Paddle(0, paddle.getX(), BORDER, 1);
-				break;
-		case 4: paddle = new Paddle(1, WIDTH - 8 - BORDER, paddle.getY(), 1);
-				break;
-		}
+		paddle.makeSmall();
 	}
 	
 	public void setPaddlePosition(float position){

@@ -65,8 +65,12 @@ public class Board extends JPanel implements Commons {
     	// Assigning Network Player Number to all players
     	if (numPlayers == 1){
 			players[0].networkPlayerNumber = nwh.myPlayerNo;    		
-        	for (int i=1; i<4; i++)
-    			players[i].kill();    		
+			players[1].kill();    		
+			players[2] = new AIPlayer(3, this);
+			((AIPlayer) players[2]).startPlaying();
+			players[3].kill();    		
+//        	for (int i=1; i<4; i++)
+//   			players[i].kill();    		
     	}
     	if (numPlayers == 2){
     		players[0].networkPlayerNumber = nwh.myPlayerNo;

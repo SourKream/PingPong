@@ -5,30 +5,47 @@ public class Paddle extends Sprite implements Commons {
 
     private int dx = 0;
     public int movingAxis; // 0 for x-axis and 1 for y-axis
+    private int colour;
 
-    public Paddle (int axis, float initX, float initY, int paddleType) {
+    public Paddle (int axis, float initX, float initY, int colour) {
 
-    	ImageIcon ii;
-    	if(paddleType==1) {
-	    	if (axis==0)
-	    		ii = new ImageIcon("../res/paddleH.png");
-	    	else 
-	    		ii = new ImageIcon("../res/paddleV.png");
-    	}
-    	else {
-    		if (axis==0)
-	    		ii = new ImageIcon("../res/paddleH_big.png");
-	    	else 
-	    		ii = new ImageIcon("../res/paddleV_big.png");
-    	}
+    	this.colour = colour;        
+        movingAxis = axis;
+        
+        makeSmall();
+
+        x = initX;
+        y = initY;
+    }
+    
+    public void makeBig(){
+
+    	String PaddleImagePath = "../res/Paddles/";
+    	if (movingAxis == 0)
+    		PaddleImagePath += ("HBpaddle" + Integer.toString(colour) + ".png");
+    	else
+    		PaddleImagePath += ("VBpaddle" + Integer.toString(colour) + ".png");
+
+    	ImageIcon ii = new ImageIcon(PaddleImagePath);
         image = ii.getImage();
 
         i_width = image.getWidth(null);
-        i_heigth = image.getHeight(null);
-        
-        movingAxis = axis;
-        x = initX;
-        y = initY;
+        i_heigth = image.getHeight(null);    	
+    }
+    
+    public void makeSmall(){
+
+    	String PaddleImagePath = "../res/Paddles/";
+    	if (movingAxis == 0)
+    		PaddleImagePath += ("HSpaddle" + Integer.toString(colour) + ".png");
+    	else
+    		PaddleImagePath += ("VSpaddle" + Integer.toString(colour) + ".png");
+
+    	ImageIcon ii = new ImageIcon(PaddleImagePath);
+        image = ii.getImage();
+
+        i_width = image.getWidth(null);
+        i_heigth = image.getHeight(null);    	
     }
 
     public void move() {
@@ -55,11 +72,11 @@ public class Paddle extends Sprite implements Commons {
     public void keyPressed(int key) {
 
         if (key == KeyEvent.VK_LEFT) {
-            dx = -1;
+            dx = -6;
         }
 
         if (key == KeyEvent.VK_RIGHT) {
-            dx = 1;
+            dx = 6;
         }
     }
 
