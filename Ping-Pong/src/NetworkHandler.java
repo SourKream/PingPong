@@ -310,12 +310,7 @@ public class NetworkHandler
 		{
 			@Override
 			public void run()
-			{	
-				// maintaining last receieved stats
-				lastReceived = new long[connectedPlayers];
-				isInGame     = new boolean[connectedPlayers];				
-				Arrays.fill(lastReceived,System.currentTimeMillis());
-				Arrays.fill(isInGame,true);			
+			{		
 				
 				// wait for game to start, else receives unnecessary messages!
 				while (!gameStart) {}
@@ -370,7 +365,7 @@ public class NetworkHandler
 			{
 				int curPlayerNo = (i>=myPlayerNo) ? i+1 : i;
 				//System.out.println(board.players[curPlayerNo+1].isAlive());
-				if ((curTime - startTime > 2000)  && isInGame[i] && (curTime - lastReceived[i] > 1000))
+				if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000))
 				{						
 					isInGame[i] = false;
 					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
@@ -382,9 +377,18 @@ public class NetworkHandler
 	private void startGame()
 	{
 		System.out.println("starting my game");
+		System.out.println("Player No. " + Integer.toString(myPlayerNo));
 		timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
 		startTime = System.currentTimeMillis();
+		
+		// maintaining last receieved stats
+		lastReceived = new long[connectedPlayers];
+		isInGame     = new boolean[connectedPlayers];				
+		Arrays.fill(lastReceived,System.currentTimeMillis());
+		Arrays.fill(isInGame,true);	
+		
 		gameStart = true;
+		
         board.startGame();
 	}
 	
