@@ -11,7 +11,7 @@ public interface Commons {
     public static final int DELAY = 1000;
     public static final int PERIOD = 5;
     public static final int SIZE = 26;
-    public static final int INIT_LIVES = 2;
+    public static final int INIT_LIVES = 5;
     public static final int MAX_COUNT = 25000;
     public static final int POWER_UP_TIME = 2500;
     public static final int NUM_POWER_UPS = 10;

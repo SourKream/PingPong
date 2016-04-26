@@ -322,7 +322,7 @@ public class NetworkHandler
 
 				try
 				{
-					while (board.ingame)		// change to while game is not over
+					while (board.ingame)		// while game is not over
 					{
 						byte[] buf = new byte[256];
 						DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -372,9 +372,7 @@ public class NetworkHandler
 				//System.out.println(board.players[curPlayerNo+1].isAlive());
 				if ((curTime - startTime > 2000)  && isInGame[i] && (curTime - lastReceived[i] > 1000))
 				{						
-					System.out.println(curTime);
-					System.out.println(curTime - lastReceived[i]);
-					//isInGame[i] = false;
+					isInGame[i] = false;
 					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
 				}
 			}
