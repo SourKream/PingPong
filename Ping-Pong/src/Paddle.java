@@ -9,13 +9,16 @@ public class Paddle extends Sprite implements Commons {
 
     public Paddle (int axis, float initX, float initY, int colour) {
 
-    	this.colour = colour;        
         movingAxis = axis;
-        
-        makeSmall();
+        setColor(colour);
 
         x = initX;
         y = initY;
+    }
+    
+    public void setColor(int colour){
+    	this.colour = colour;
+    	makeSmall();
     }
     
     public void makeBig(){
@@ -72,11 +75,11 @@ public class Paddle extends Sprite implements Commons {
     public void keyPressed(int key) {
 
         if (key == KeyEvent.VK_LEFT) {
-            dx = -6;
+            dx = -PADDLE_STEP;
         }
 
         if (key == KeyEvent.VK_RIGHT) {
-            dx = 6;
+            dx = PADDLE_STEP;
         }
     }
 

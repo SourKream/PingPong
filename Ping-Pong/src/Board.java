@@ -49,8 +49,9 @@ public class Board extends JPanel implements Commons {
         addKeyListener(new TAdapter());
         setFocusable(true);
 
-        corner = new Corners[4];
-        
+        this.setBackground(Commons.BoardColor);
+
+        corner = new Corners[4];        
         corner[0] = new Corners(Commons.CORNER_1_X, Commons.CORNER_1_Y);
         corner[1] = new Corners(Commons.CORNER_2_X, Commons.CORNER_2_Y);
         corner[2] = new Corners(Commons.CORNER_3_X, Commons.CORNER_3_Y);
@@ -64,7 +65,7 @@ public class Board extends JPanel implements Commons {
     	
     	// Assigning Network Player Number to all players
     	if (numPlayers == 1){
-			players[0].networkPlayerNumber = nwh.myPlayerNo;    		
+			players[0].setNetworkPlayerNumber(nwh.myPlayerNo);    		
 			players[1].kill();    		
 			players[2] = new AIPlayer(3, this);
 			((AIPlayer) players[2]).startPlaying();
@@ -73,36 +74,36 @@ public class Board extends JPanel implements Commons {
 //   			players[i].kill();    		
     	}
     	if (numPlayers == 2){
-    		players[0].networkPlayerNumber = nwh.myPlayerNo;
-    		players[2].networkPlayerNumber = (nwh.myPlayerNo + 1)%2;
+    		players[0].setNetworkPlayerNumber(nwh.myPlayerNo);
+    		players[2].setNetworkPlayerNumber((nwh.myPlayerNo + 1)%2);
     		players[1].kill();
     		players[3].kill();
     	}
     	if (numPlayers == 3){
     		if (nwh.myPlayerNo==0){
-	    		players[0].networkPlayerNumber = 0;
-	    		players[1].networkPlayerNumber = 1;
-	    		players[2].networkPlayerNumber = 2;
+	    		players[0].setNetworkPlayerNumber(0);
+	    		players[1].setNetworkPlayerNumber(1);
+	    		players[2].setNetworkPlayerNumber(2);
 	    		players[3].kill();
     		} else if (nwh.myPlayerNo==1){
-	    		players[3].networkPlayerNumber = 0;
-	    		players[0].networkPlayerNumber = 1;
-	    		players[1].networkPlayerNumber = 2;
+	    		players[3].setNetworkPlayerNumber(0);
+	    		players[0].setNetworkPlayerNumber(1);
+	    		players[1].setNetworkPlayerNumber(2);
 	    		players[2].kill();
     		} else if (nwh.myPlayerNo==2){
-	    		players[2].networkPlayerNumber = 0;
-	    		players[3].networkPlayerNumber = 1;
-	    		players[0].networkPlayerNumber = 2;
+	    		players[2].setNetworkPlayerNumber(0);
+	    		players[3].setNetworkPlayerNumber(1);
+	    		players[0].setNetworkPlayerNumber(2);
 	    		players[1].kill();
     		}
     	}
        	if (numPlayers == 4){
         	for (int i=0; i<4; i++)
-    			players[i].networkPlayerNumber = (nwh.myPlayerNo + i)%4;
+    			players[i].setNetworkPlayerNumber((nwh.myPlayerNo + i)%4);
     	}
     	
 		for (int i=0; i<4; i++){
-			if (players[i].networkPlayerNumber==0)
+			if (players[i].getNetworkPlayerNumber()==0)
 				hostPlayer = i;
 			
 		}
@@ -200,7 +201,7 @@ public class Board extends JPanel implements Commons {
         
         for(int i = 0; i< 4; i++)
         {
-        	g2d.setColor(Color.RED);
+        	g2d.setColor(Commons.CornerColor);
         	g2d.fill(corner[i].getCorner());
         }
     }
@@ -382,7 +383,7 @@ public class Board extends JPanel implements Commons {
     	if (opCode.equals("a")){
     		int playerNumber = Integer.parseInt(data[1]);    		
     		for (int i=0; i<4; i++)
-				if (players[i].networkPlayerNumber==playerNumber){					
+				if (players[i].getNetworkPlayerNumber()==playerNumber){					
 					int packetNumber = Integer.parseInt(data[2]);
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
@@ -393,7 +394,7 @@ public class Board extends JPanel implements Commons {
     	} else if (opCode.equals("b")) {
     		int playerNumber = Integer.parseInt(data[1]);    	
     		for (int i=0; i<4; i++)
-				if (players[i].networkPlayerNumber==playerNumber){					
+				if (players[i].getNetworkPlayerNumber()==playerNumber){					
 					int packetNumber = Integer.parseInt(data[2]);
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
@@ -408,7 +409,7 @@ public class Board extends JPanel implements Commons {
     	} else if (opCode.equals("c")) {
     		int playerNumber = Integer.parseInt(data[1]);    		
     		for (int i=0; i<4; i++)
-				if (players[i].networkPlayerNumber==playerNumber){					
+				if (players[i].getNetworkPlayerNumber()==playerNumber){					
 					int packetNumber = Integer.parseInt(data[2]);
 					players[i].networkPacketNumber = packetNumber;
 					int lives = Integer.parseInt(data[3]);
@@ -440,14 +441,14 @@ public class Board extends JPanel implements Commons {
     	if (packetType == 1){
     	
 	    	data += "a,";
-	    	data += Integer.toString(players[playerNumber].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
 	    	data += Float.toString(players[playerNumber].paddle.x).concat(",");
     	} else if (packetType == 2) {
     		
 	    	data += "b,";
-	    	data += Integer.toString(players[0].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[0].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
 	    	players[0].networkPacketNumber += 1;
 	    	data += Float.toString(ball.getX()).concat(",");
@@ -457,7 +458,7 @@ public class Board extends JPanel implements Commons {
     	} else if (packetType == 3) {
     		
 	    	data += "c,";
-	    	data += Integer.toString(players[playerNumber].networkPlayerNumber).concat(",");
+	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
 	    	data += Integer.toString(players[playerNumber].lives()).concat(",");
@@ -474,7 +475,7 @@ public class Board extends JPanel implements Commons {
     	if (packetType == 4) {
             
             data += "d,";
-            data += Integer.toString(players[0].networkPlayerNumber).concat(",");
+            data += Integer.toString(players[0].getNetworkPlayerNumber()).concat(",");
             data += Integer.toString(powerUpNum).concat(",");
             data += Integer.toString(powerUps[powerUpNum].powerUpType).concat(",");
             data += Integer.toString((int)powerUps[powerUpNum].getX()).concat(",");

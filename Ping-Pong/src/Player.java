@@ -2,7 +2,7 @@ import java.awt.Graphics2D;
 
 public class Player implements Commons{
 	
-	public int networkPlayerNumber = -1;
+	private int networkPlayerNumber = -1;
 	public int networkPacketNumber = 0;
 	
 	public Paddle paddle;
@@ -32,6 +32,15 @@ public class Player implements Commons{
 		}
 	}
 	
+	public void setNetworkPlayerNumber(int num){
+		networkPlayerNumber = num;
+		paddle.setColor(num+1);
+	}
+
+	public int getNetworkPlayerNumber(){
+		return networkPlayerNumber;
+	}
+
 	public boolean isAlive(){
 		return lives>0;
 	}

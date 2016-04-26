@@ -17,7 +17,7 @@ public class Game extends JFrame {
     private void initUI(int i, int numPlayers, String hostAddress) {
         board = new Board (numPlayers);
         
-        Border thickBorder = new LineBorder(Color.RED, Commons.BORDER);
+        Border thickBorder = new LineBorder(Commons.BorderColor, Commons.BORDER);
         board.setBorder(thickBorder);
         add(board);
         

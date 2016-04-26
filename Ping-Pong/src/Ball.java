@@ -4,7 +4,7 @@ public class Ball extends Sprite implements Commons {
 
     private float xdir;
     private float ydir;
-    private float speedup = (float)6;	
+    private float speedup = (float)BALL_NORMAL_SPEED;	
     private int speedupCounter;
 
     public Ball() {
@@ -26,15 +26,15 @@ public class Ball extends Sprite implements Commons {
         x += speedup * xdir;
         y += speedup * ydir;
         
-        if (speedup==2){
+        if (speedup==BALL_FAST_SPEED){
         	speedupCounter += 1;
         	if (speedupCounter == FAST_BALL_TIME)
-        		speedup = 1;
+        		speedup = BALL_NORMAL_SPEED;
         }
     }
     
     public void increaseSpeed(){
-    	speedup = 2;
+    	speedup = BALL_FAST_SPEED;
     	speedupCounter = 0;
     }
     
