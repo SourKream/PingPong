@@ -328,7 +328,17 @@ public class Board extends JPanel implements Commons {
 		        if ((ball.getRect()).intersects(players[i].paddle.getRect())){
 		        	lastPlayerToHitTheBall = i;
 		        	Physics.reflectBallFromPaddle(ball, players[i].paddle);
+		        	return;
 		        }
+
+        // Collision of Ball with a PowerUp
+        for (int i=0; i<powerUps.length; i++)
+        	if (powerUps[i].isActive())
+        		if (powerUps[i].getRect().intersects(ball.getRect())){
+        			powerUps[i].Disable();
+        			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
+        			return;
+        		}
 
         // Collision of Ball with a Player's Wall
         for (int i=0; i<players.length; i++)
@@ -339,16 +349,8 @@ public class Board extends JPanel implements Commons {
 	        		nwh.sendStateInfo(updateStateOnNetwork(3,i));
 	        	}
 	        	Physics.reflectBallFromWall(ball, players[i]);
-	        }
-        
-        // Collision of Ball with a PowerUp
-        for (int i=0; i<powerUps.length; i++)
-        	if (powerUps[i].isActive())
-        		if (powerUps[i].getRect().intersects(ball.getRect())){
-        			powerUps[i].Disable();
-        			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
-        		}
-  
+	        	return;
+	        }        
         // Collision of Ball with a corner
         for (int i = 0; i<4; i++)
         	if (Physics.ballHitsCorner(i+1, ball)) {
