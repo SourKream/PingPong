@@ -364,7 +364,7 @@ public class NetworkHandler
 			{
 				int curPlayerNo = (i>=myPlayerNo) ? i+1 : i;
 				
-				if ((curTime - startTime > 3000) && board.players[curPlayerNo].isAlive() && isInGame[i] && (curTime - lastReceived[i] > 1000))
+				if ((curTime - startTime > 2000) && board.players[curPlayerNo].isAlive() && isInGame[i] && (curTime - lastReceived[i] > 1000))
 				{
 					isInGame[i] = false;
 					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
