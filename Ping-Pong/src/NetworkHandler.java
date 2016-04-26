@@ -23,6 +23,7 @@ public class NetworkHandler
 	private boolean[] isInGame;
 	private Timer timer;					// for detecting drops during game
 	private long  startTime;
+	private boolean gameStart;
 				
 	public NetworkHandler(Board board, int connectedPlayers)
 	{
@@ -33,6 +34,7 @@ public class NetworkHandler
 		this.playerPorts      = new int[connectedPlayers];	
 		this.myPlayerNo       = 0;
 		this.timer			  = new Timer();
+		this.gameStart        = false;
 		
 		this.board.setNWH(this);
 			
@@ -48,7 +50,8 @@ public class NetworkHandler
 		this.playerAddresses  = new InetAddress[connectedPlayers];
 		this.playerPorts      = new int[connectedPlayers];				
 		this.timer			  = new Timer();
-		
+		this.gameStart        = false;
+			
 		this.board.setNWH(this);
 		
 		defineUpdateThread();
@@ -100,7 +103,6 @@ public class NetworkHandler
 		}
 		System.out.println("Sent all start signals");
 		
-		timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
 		startGame();
 	}
 	
@@ -233,7 +235,6 @@ public class NetworkHandler
 		}
 		catch (Exception e) {System.err.println("Client: Couldn't receive start signal");}
 		
-		timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
 		startGame();
 	}
 	
@@ -316,6 +317,9 @@ public class NetworkHandler
 				Arrays.fill(lastReceived,System.currentTimeMillis());
 				Arrays.fill(isInGame,true);			
 				
+				// wait for game to start, else receives unnecessary messages!
+				while (!gameStart) {}
+
 				try
 				{
 					while (board.ingame)		// change to while game is not over
@@ -330,7 +334,7 @@ public class NetworkHandler
 						// call board update functions
 						board.updateStateFromNetwork(update);
 						
-						updateTimeStamp(packet.getAddress(),packet.getPort());
+						updateTimeStamp(update);
 						
 					}
 				}
@@ -344,15 +348,16 @@ public class NetworkHandler
 		};
 	}
 	
-	private void updateTimeStamp(InetAddress address, int port)
+	private void updateTimeStamp(String update)
 	{
-		int j = 0;
-		for (int i = 0 ; i < connectedPlayers ; i++)
-			if (playerAddresses[i]==address && playerPorts[i]==port)
-				j = i;
+		// assumes , separated packets and the second number is the player number
+		String data[] = update.split(",");
+		int curPlayerNo   = Integer.parseInt(data[1]);	// 0, 1, 2...
 		
-		lastReceived[j] = System.currentTimeMillis();
-					
+		int index = (curPlayerNo <= myPlayerNo) ? curPlayerNo : curPlayerNo-1;				
+		lastReceived[index] = System.currentTimeMillis();
+		
+		//System.out.println(curPlayerNo);
 	}
 	
     private class DropCheckTimer extends TimerTask {
@@ -365,9 +370,11 @@ public class NetworkHandler
 			{
 				int curPlayerNo = (i>=myPlayerNo) ? i+1 : i;
 				//System.out.println(board.players[curPlayerNo+1].isAlive());
-				if ((curTime - startTime > 2000)  && isInGame[i] && (curTime - lastReceived[i] > 3000))
-				{
-					isInGame[i] = false;
+				if ((curTime - startTime > 2000)  && isInGame[i] && (curTime - lastReceived[i] > 1000))
+				{						
+					System.out.println(curTime);
+					System.out.println(curTime - lastReceived[i]);
+					//isInGame[i] = false;
 					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
 				}
 			}
@@ -377,7 +384,9 @@ public class NetworkHandler
 	private void startGame()
 	{
 		System.out.println("starting my game");
+		timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
 		startTime = System.currentTimeMillis();
+		gameStart = true;
         board.startGame();
 	}
 	
