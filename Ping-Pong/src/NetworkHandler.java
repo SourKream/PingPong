@@ -100,6 +100,7 @@ public class NetworkHandler
 		}
 		System.out.println("Sent all start signals");
 		
+		timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
 		startGame();
 	}
 	
@@ -232,6 +233,7 @@ public class NetworkHandler
 		}
 		catch (Exception e) {System.err.println("Client: Couldn't receive start signal");}
 		
+		timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
 		startGame();
 	}
 	
@@ -313,7 +315,6 @@ public class NetworkHandler
 				isInGame     = new boolean[connectedPlayers];				
 				Arrays.fill(lastReceived,System.currentTimeMillis());
 				Arrays.fill(isInGame,true);			
-				timer.scheduleAtFixedRate(new DropCheckTimer(), 1000, 500);				
 				
 				try
 				{
@@ -348,7 +349,7 @@ public class NetworkHandler
 		int j = 0;
 		for (int i = 0 ; i < connectedPlayers ; i++)
 			if (playerAddresses[i]==address && playerPorts[i]==port)
-				j = 1;
+				j = i;
 		
 		lastReceived[j] = System.currentTimeMillis();
 					
@@ -363,8 +364,8 @@ public class NetworkHandler
 			for (int i = 0 ; i < connectedPlayers ; i++)
 			{
 				int curPlayerNo = (i>=myPlayerNo) ? i+1 : i;
-				
-				if ((curTime - startTime > 2000) && board.players[curPlayerNo].isAlive() && isInGame[i] && (curTime - lastReceived[i] > 3000))
+				//System.out.println(board.players[curPlayerNo+1].isAlive());
+				if ((curTime - startTime > 2000)  && isInGame[i] && (curTime - lastReceived[i] > 3000))
 				{
 					isInGame[i] = false;
 					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
