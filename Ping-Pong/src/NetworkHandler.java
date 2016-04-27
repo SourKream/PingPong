@@ -422,9 +422,9 @@ public class NetworkHandler
 		Arrays.fill(hostingAI,false);
 		
 		// which players am I hosting?
-		if isHost
+		if (isHost)
 			for (int i = 1 ; i<totalPlayers ; i++)
-				if i <= aiPlayers
+				if (i <= aiPlayers)
 					hostingAI[i] = true;	
 
 		gameStart = true;
