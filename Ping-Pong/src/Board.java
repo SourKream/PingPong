@@ -362,7 +362,7 @@ public class Board extends JPanel implements Commons {
         for (int i = 0; i<4; i++)
         	if (Physics.testIntersection(corner[i].getCorner(), ball.getCircle())) {
         		//System.out.println("Ball has hit the corner "+i);
-        		Physics.reflectBallFromCorner(ball, i+1);
+        		Physics.reflectBallFromCorner(ball, i+1, corner[i]);
         	}	       
     }
     

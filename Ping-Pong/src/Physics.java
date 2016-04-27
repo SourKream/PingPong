@@ -69,13 +69,31 @@ public class Physics implements Commons {
 		}
 	}
 
-    public static void reflectBallFromCorner(Ball ball, int corner_no){
+    public static void reflectBallFromCorner(Ball ball, int corner_no, Corners corner){
     	
     	// Corner number 1 -> Top Left
     	// Corner number 2 -> Top Right ...
     	
     	float xdir = ball.getXDir();
     	float ydir = ball.getYDir();
+
+    	float delta_x = (float)0.1;
+    	float delta_y = (float)0.1;
+    	switch(corner_no)
+    	{
+    	case 2:	delta_x = -delta_x;
+    			break;
+    	case 3: delta_x = -delta_x;
+    			delta_y = -delta_y;
+    			break;
+    	case 4: delta_y = -delta_y;
+				break;
+    	}
+    	
+    	while (testIntersection(ball.getCircle(), corner.getCorner())){
+    		ball.setX(ball.getX()+delta_x);
+    		ball.setY(ball.getY()+delta_y);
+    	}
     	
     	switch(corner_no)
     	{
