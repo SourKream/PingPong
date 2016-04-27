@@ -79,17 +79,13 @@ public class Board extends JPanel implements Commons {
     	return -1;
     }
 	
-    public void startGame(){
+    public void startGame(int numAIPlayers){
     	
     	// Assigning Network Player Number to all players
     	if (numPlayers == 1){
 			players[0].setNetworkPlayerNumber(nwh.myPlayerNo);    		
-			players[1].kill();    		
-			players[2] = new AIPlayer(3, this);
-			((AIPlayer) players[2]).startPlaying();
-			players[3].kill();    		
-//        	for (int i=1; i<4; i++)
-//   			players[i].kill();    		
+        	for (int i=1; i<4; i++)
+        		players[i].kill();    		
     	} else if (numPlayers == 2){
     		players[0].setNetworkPlayerNumber(nwh.myPlayerNo);
     		players[2].setNetworkPlayerNumber((nwh.myPlayerNo + 1)%2);
@@ -121,6 +117,10 @@ public class Board extends JPanel implements Commons {
 			if (players[i].getNetworkPlayerNumber()==0)
 				hostPlayer = i;
 			
+		}
+		
+		for (int i=0; i<numAIPlayers; i++){
+			startAIPlayer(i+1);
 		}
 
 		// Sending Initial Ball Position
