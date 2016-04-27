@@ -6,6 +6,7 @@ public interface Commons {
     public static final int BORDER = 10;   //Width of the board boundary
     public static final int WIDTH = 500;
     public static final int HEIGHT = 500;
+    public static final int AURA = 20;
     public static final int BOTTOM_EDGE = HEIGHT - BORDER;
     public static final int INIT_BALL_X = WIDTH/2 + 30;
     public static final int INIT_BALL_Y = BOTTOM_EDGE - 30;    
@@ -17,7 +18,7 @@ public interface Commons {
     public static final int POWER_UP_TIME = 2500;
     public static final int NUM_POWER_UPS = 10;
     public static final int FAST_BALL_TIME = 700;
-    public static final int BALL_FAST_SPEED = 10;
+    public static final int BALL_FAST_SPEED = 8;
     public static final float BALL_NORMAL_SPEED = (float)4;
     public static final int PADDLE_STEP = 5;
     public static final Color BorderColor = new Color(0, 70, 70);

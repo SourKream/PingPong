@@ -284,25 +284,10 @@ public class Board extends JPanel implements Commons {
     
     private boolean ballInMyArea(Ball ball){
     	
-    	float x = ball.getX();
-    	float y = ball.getY();
-    	
-    	if (y < Commons.HEIGHT/2)
-    		return false;
-    	
-    	if (x < Commons.WIDTH/2){
-    		if (players[1].isAlive()){
-    			if (y < Commons.HEIGHT - x)
-    				return false;
-    		}    		
-    	} else {
-    		if (players[3].isAlive()){
-    			if (y < x)
-    				return false;    			
-    		}
-    	}
-    	
-    	return true;
+    	for (int i=0; i<PlayersInMyControl.size(); i++)
+	    	if (Physics.testIntersection(players[i].paddle.getVibeRectangle(), ball.getCircle()))
+	    		return true;
+    	return false;
     }
     
     private void checkShowTimeForPowerUps(){
@@ -431,7 +416,7 @@ public class Board extends JPanel implements Commons {
 					int packetNumber = Integer.parseInt(data[2]);
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
-						float position = Float.parseFloat(data[3]);
+						float position = Float.valueOf(data[3]);
 						players[i].setPaddlePosition(position);
 					}					
 				}
@@ -442,10 +427,10 @@ public class Board extends JPanel implements Commons {
 					int packetNumber = Integer.parseInt(data[2].trim());
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
-						float x = Float.parseFloat(data[3]);
-						float y = Float.parseFloat(data[4]);
-						float dx = Float.parseFloat(data[5]);
-						float dy = Float.parseFloat(data[6]);
+						float x = Float.valueOf(data[3]);
+						float y = Float.valueOf(data[4]);
+						float dx = Float.valueOf(data[5]);
+						float dy = Float.valueOf(data[6]);
 						players[i].setBallPosition(ball, x, y, dx, dy);
 						repaint();
 					}
@@ -510,29 +495,29 @@ public class Board extends JPanel implements Commons {
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Float.toString(players[playerNumber].paddle.getPosition()).concat(",");
+	    	data += Integer.toString(players[playerNumber].paddle.getPosition());
     	} else if (packetType == 2) {
     		
 	    	data += "b,";
 	    	data += Integer.toString(players[0].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
 	    	players[0].networkPacketNumber += 1;
-	    	data += Float.toString(ball.getX()).concat(",");
-	    	data += Float.toString(ball.getY()).concat(",");
-	    	data += Float.toString(ball.getXDir()).concat(",");
-	    	data += Float.toString(ball.getYDir()).concat(",");
+	    	data += String.format( "%.2f", ball.getX()).concat(",");
+	    	data += String.format( "%.2f", ball.getY()).concat(",");
+	    	data += String.format( "%.2f", ball.getXDir()).concat(",");
+	    	data += String.format( "%.2f", ball.getYDir());
     	} else if (packetType == 3) {
     		
 	    	data += "c,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Integer.toString(players[playerNumber].lives()).concat(",");
+	    	data += Integer.toString(players[playerNumber].lives());
     	} else if (packetType == 5) {
     		
 	    	data += "e,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
-	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber);
 	    	players[playerNumber].networkPacketNumber += 1;
     	} 
 
@@ -553,7 +538,7 @@ public class Board extends JPanel implements Commons {
             data += Integer.toString(powerUps[powerUpNum].powerUpType).concat(",");
             data += Integer.toString((int)powerUps[powerUpNum].getX()).concat(",");
             data += Integer.toString((int)powerUps[powerUpNum].getY()).concat(",");
-            data += Integer.toString(powerUps[powerUpNum].showTime).concat(",");
+            data += Integer.toString(powerUps[powerUpNum].showTime);
         } else if (packetType == 6) {
     		
 	    	data += "f,";

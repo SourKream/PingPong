@@ -1,3 +1,4 @@
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 
@@ -94,12 +95,12 @@ public class Paddle extends Sprite implements Commons {
         }
     }
    
-    public float getPosition(){
+    public int getPosition(){
 
     	if (movingAxis==0)
-    		return x;
+    		return (int) x;
     	else
-    		return y;
+    		return (int) y;
     }
     
     public void setPosition(int position){
@@ -112,5 +113,9 @@ public class Paddle extends Sprite implements Commons {
     
     public int getAxis() {
     	return movingAxis;
+    }
+    
+    public Rectangle getVibeRectangle(){
+    	return new Rectangle(Math.round(x) - AURA, Math.round(y) - AURA, i_width + 2*AURA, i_heigth + 2*AURA);
     }
 }
