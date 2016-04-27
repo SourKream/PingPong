@@ -191,7 +191,7 @@ public class NetworkHandler
 		{
 			// preparing an empty packet to send to host
 			skt_in = new DatagramSocket();
-			skt_in.setSoTimeout(5000);
+			skt_in.setSoTimeout(15000);
 			
 			// empty ('hello') packet that will be sent to the host first
 			byte[] buf 			  = new byte[256];
@@ -270,8 +270,6 @@ public class NetworkHandler
 					// for host
 					playerAddresses.add(InetAddress.getByName(hostAddress));
 					playerPorts.add(hostPort);	
-					
-					board.setNumPlayers(connectedPlayers+1);
 				}
 				
 				else if (i==2)
@@ -279,6 +277,8 @@ public class NetworkHandler
 					totalPlayers = Integer.parseInt(cur.trim());
 					aiPlayers    = totalPlayers - connectedPlayers - 1 ;
 					board.setNumPlayers(totalPlayers);
+					System.out.println("Connected Players : " + connectedPlayers);
+					System.out.println("Total Players     : " + totalPlayers);
 				}
 				
 				else if (i%2 == 1) playerAddresses.add(InetAddress.getByName(cur.trim()));
@@ -393,17 +393,36 @@ public class NetworkHandler
         public void run() {
 			long curTime = System.currentTimeMillis();
 			// to call currentTimeMillis only once, using lastReceived[j]
-			for (int i = 0 ; i < connectedPlayers ; i++)
-			{
-				int curPlayerNo = (i>=myPlayerNo) ? i+1 : i;
-				//System.out.println(board.players[curPlayerNo+1].isAlive());
-				if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
-				{						
-					isInGame[i] = false;
-					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
+			
+			boolean startAIs = true;
+			boolean[] dropped = new boolean[totalPlayers];
+			Arrays.fill(dropped,false);
+			
+			for (int i = 0 ; i < totalPlayers ; i++)
+				if (i != myPlayerNo)
+				{
+					//System.out.println(board.players[curPlayerNo+1].isAlive());
+					if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
+					{						
+						//isInGame[i] = false;
+						System.out.println("Player Dropped : " + Integer.toString(i));
+						dropped[i] = true;
+					}
+					
+					else if (i < myPlayerNo) startAIs = false;
+						
 				}
-			}
-        }
+				
+				if (startAIs)
+					for (int i = 0 ; i<totalPlayers ; i++)
+						if (dropped[i])
+						{
+							board.startAIPlayer(i);
+							hostingAI[i] = true;
+						}
+				
+			
+		}
     }
 	
 	private void startGame()
