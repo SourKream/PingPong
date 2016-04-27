@@ -1,5 +1,6 @@
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 
 public class Sprite {
 
@@ -39,6 +40,11 @@ public class Sprite {
 
     Rectangle getRect() {
         return new Rectangle(Math.round(x), Math.round(y),
-                image.getWidth(null), image.getHeight(null));
+                image.getWidth(null), image.getHeight(null));        
     }
+    
+    Ellipse2D getCircle() {
+    	return new Ellipse2D.Float(x, y, image.getWidth(null), image.getHeight(null));
+    }
+    
 }

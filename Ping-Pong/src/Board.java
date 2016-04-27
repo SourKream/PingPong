@@ -72,14 +72,12 @@ public class Board extends JPanel implements Commons {
 			players[3].kill();    		
 //        	for (int i=1; i<4; i++)
 //   			players[i].kill();    		
-    	}
-    	if (numPlayers == 2){
+    	} else if (numPlayers == 2){
     		players[0].setNetworkPlayerNumber(nwh.myPlayerNo);
     		players[2].setNetworkPlayerNumber((nwh.myPlayerNo + 1)%2);
     		players[1].kill();
     		players[3].kill();
-    	}
-    	if (numPlayers == 3){
+    	} else if (numPlayers == 3){
     		if (nwh.myPlayerNo==0){
 	    		players[0].setNetworkPlayerNumber(0);
 	    		players[1].setNetworkPlayerNumber(1);
@@ -96,8 +94,7 @@ public class Board extends JPanel implements Commons {
 	    		players[0].setNetworkPlayerNumber(2);
 	    		players[1].kill();
     		}
-    	}
-       	if (numPlayers == 4){
+    	} else if (numPlayers == 4){
         	for (int i=0; i<4; i++)
     			players[i].setNetworkPlayerNumber((nwh.myPlayerNo + i)%4);
     	}
@@ -327,7 +324,7 @@ public class Board extends JPanel implements Commons {
         // Collision of Ball with Paddle
         for (int i=0; i<players.length; i++)
         	if (players[i].isAlive())
-		        if ((ball.getRect()).intersects(players[i].paddle.getRect())){
+		        if (Physics.testIntersection(ball.getCircle(), players[i].paddle.getRect())){
 		        	lastPlayerToHitTheBall = i;
 		        	if (PlayersInMyControl.contains(i))
 		        		nwh.sendStateInfo(updateStateOnNetwork(5,i));
@@ -338,7 +335,7 @@ public class Board extends JPanel implements Commons {
         // Collision of Ball with a PowerUp
         for (int i=0; i<powerUps.length; i++)
         	if (powerUps[i].isActive())
-        		if (powerUps[i].getRect().intersects(ball.getRect())){
+        		if (Physics.testIntersection(powerUps[i].getCircle(), ball.getCircle())){
         			powerUps[i].Disable();
         			ApplyPowerUpToPlayer(powerUps[i], players[lastPlayerToHitTheBall]);
 		        	if (PlayersInMyControl.contains(lastPlayerToHitTheBall))
@@ -359,7 +356,7 @@ public class Board extends JPanel implements Commons {
 	        }        
         // Collision of Ball with a corner
         for (int i = 0; i<4; i++)
-        	if (Physics.ballHitsCorner(i+1, ball)) {
+        	if (Physics.testIntersection(corner[i].getCorner(), ball.getCircle())) {
         		//System.out.println("Ball has hit the corner "+i);
         		Physics.reflectBallFromCorner(ball, i+1);
         	}	       

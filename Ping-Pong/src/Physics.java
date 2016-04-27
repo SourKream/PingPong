@@ -1,3 +1,5 @@
+import java.awt.Shape;
+import java.awt.geom.Area;
 
 public class Physics implements Commons {
 	
@@ -66,29 +68,6 @@ public class Physics implements Commons {
 				break;
 		}
 	}
-	
-    public static boolean ballHitsCorner(int corner_no, Ball ball)
-    {
-    	switch (corner_no){
-		case 1:	if(ball.getY() <= CORNER_1_Y[1] + 
-				(-1)*(ball.getX()-CORNER_1_X[1]))
-				return true;
-				break;
-		case 2:	if(ball.getY() <= CORNER_2_Y[0] + 
-				(1)*(ball.getX()+ball.i_width-CORNER_2_X[0]))
-				return true;
-				break;
-		case 3:	if(ball.getY()+ball.i_heigth >= CORNER_3_Y[0] + 
-				(-1)*(ball.getX()+ball.i_width-CORNER_3_X[0]))
-				return true;
-				break;
-		case 4: if(ball.getY()+ball.i_heigth >= CORNER_4_Y[0] + 
-				(1)*(ball.getX()-CORNER_4_X[0]))
-				return true;
-				break;
-		}
-    	return false;
-    }
 
     public static void reflectBallFromCorner(Ball ball, int corner_no){
     	
@@ -110,5 +89,10 @@ public class Physics implements Commons {
 				break;
     	}
 	}
-	
+    
+    public static boolean testIntersection(Shape shapeA, Shape shapeB) {
+	   Area areaA = new Area(shapeA);
+	   areaA.intersect(new Area(shapeB));
+	   return !areaA.isEmpty();
+	}	
 }
