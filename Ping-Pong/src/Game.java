@@ -9,14 +9,14 @@ public class Game extends JFrame {
 
 	private Board board;
 	
-	public Game(int i, String hostAddress_or_numPlayers){
-		initUI(i, hostAddress_or_numPlayers);
+	public Game(int i, String[] hostAddress_or_connPlayers_and_aiPlayers){
+		initUI(i, hostAddress_or_connPlayers_and_aiPlayers);
 	}
     
-    private void initUI(int i, String hostAddress_or_numPlayers) {
+    private void initUI(int i, String[] hostAddress_or_connPlayers_and_aiPlayers) {
 		
 		if (i==0){	// if host
-        board = new Board (Integer.parseInt(hostAddress_or_numPlayers));
+        board = new Board (Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[1]) + Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[2]) + 1);
 		}
 		else{	// if client
 		board = new Board (0);	// don't know now, will set later
@@ -38,10 +38,10 @@ public class Game extends JFrame {
         setVisible(true);
 		
 		if (i==0){	// host
-			NetworkHandler nwh = new NetworkHandler(board,Integer.parseInt(hostAddress_or_numPlayers)-1);
+			NetworkHandler nwh = new NetworkHandler(board,Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[1]),Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[2]));
 		}		
 		else {	// client
-			NetworkHandler nwh = new NetworkHandler(board, hostAddress_or_numPlayers, 1231);
+			NetworkHandler nwh = new NetworkHandler(board, hostAddress_or_connPlayers_and_aiPlayers[1], 1231);
 		}
 		
     }
@@ -51,7 +51,7 @@ public class Game extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() { 				
-                Game game = new Game(Integer.parseInt(args[0]),args[1]);
+                Game game = new Game(Integer.parseInt(args[0]),args);
                 game.setVisible(true); 
             }
         });

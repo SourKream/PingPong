@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -10,29 +12,34 @@ public class NetworkHandler
 	private Board board;
 	private boolean isHost;
 	private int connectedPlayers;
+	private int aiPlayers;
+	private int totalPlayers;
 	
 	private DatagramSocket skt_out; 	// called by Timer to send state
 	private DatagramSocket skt_in;		// to receive state of other players
 	
-	public  int			  myPlayerNo;
-	private InetAddress[] playerAddresses;	// addresses for UDP
-	private int[]	 	  playerPorts;		// ports for UDP
+	public  int			  	  myPlayerNo;
+	private List<InetAddress> playerAddresses;	// addresses for UDP
+	private List<Integer>         playerPorts;		// ports for UDP
 	
 	private Runnable   updateGameState;
 	private long[]     lastReceived; 
+	private boolean[]  hostingAI;
 	private boolean[] isInGame;
 	private Timer timer;					// for detecting drops during game
 	private long  startTime;
 	private boolean gameStart;
 	private Thread updateThread;
 				
-	public NetworkHandler(Board board, int connectedPlayers)
+	public NetworkHandler(Board board, int connectedPlayers, int aiPlayers)
 	{	// for host
 		this.board  = board;
 		this.isHost = true;
 		this.connectedPlayers = connectedPlayers;
-		this.playerAddresses  = new InetAddress[connectedPlayers];
-		this.playerPorts      = new int[connectedPlayers];	
+		this.aiPlayers        = aiPlayers;
+		this.totalPlayers     = aiPlayers + connectedPlayers + 1;	// +1 for myself
+		this.playerAddresses  = new ArrayList<InetAddress>();
+		this.playerPorts      = new ArrayList<Integer>();	
 		this.myPlayerNo       = 0;
 		this.timer			  = new Timer();
 		this.gameStart        = false;
@@ -98,7 +105,7 @@ public class NetworkHandler
 			try
 			{
 				byte[] buf = new byte[256];
-				DatagramPacket packet = new DatagramPacket(buf, buf.length, playerAddresses[i] , playerPorts[i]);
+				DatagramPacket packet = new DatagramPacket(buf, buf.length, playerAddresses.get(i) , playerPorts.get(i));
 				skt_in.send(packet);	
 			}
 			catch (Exception e) {System.err.println("Host: Couldn't send start signal");}
@@ -127,13 +134,13 @@ public class NetworkHandler
 				
 				// check if already there => takes care of multiple connections
 				for (int i = 0 ; i<curConnected ; i++)
-					if (playerAddresses[i].equals(cur_addr) && playerPorts[i]==cur_port)
+					if (playerAddresses.get(i).equals(cur_addr) && playerPorts.get(i)==cur_port)
 						newPlayer = false;
 				
 				if (newPlayer)
 				{
-					playerAddresses[curConnected] = cur_addr;
-					playerPorts[curConnected]     = cur_port;
+					playerAddresses.add(cur_addr);
+					playerPorts.add(cur_port);
 					System.out.println("got player " + Integer.toString(curConnected+1));
 					curConnected += 1;
 				}
@@ -152,19 +159,20 @@ public class NetworkHandler
 		// for each player
 		for (int i = 0 ; i<connectedPlayers ; i++)
 		{
-			String to_send = Integer.toString(i+1); 	// player number (0 for host, 1,2... for others)
+			String to_send = Integer.toString(i+aiPlayers+1); 	// player number (0 for host, 1 -> if AI, 2... for others)
 			to_send       += "," + Integer.toString(connectedPlayers);
+			to_send       += "," + Integer.toString(totalPlayers);
 			
 			for (int j = 0 ; j<connectedPlayers ; j++)
 				if (j!=i)
 					{
-						to_send += "," + playerAddresses[j].getHostName();
-						to_send += "," + Integer.toString(playerPorts[j]);
+						to_send += "," + playerAddresses.get(j).getHostName();
+						to_send += "," + Integer.toString(playerPorts.get(j));
 					}		
 					
 			byte[] buf = new byte[256];
 			buf = to_send.getBytes();
-			DatagramPacket packet = new DatagramPacket(buf, buf.length, playerAddresses[i] , playerPorts[i]);
+			DatagramPacket packet = new DatagramPacket(buf, buf.length, playerAddresses.get(i) , playerPorts.get(i));
 			try {skt_in.send(packet);}
 			catch (Exception e) {System.out.println("Host couldn't send the data for all others to client " + Integer.toString(i+1));}
 		}
@@ -256,31 +264,39 @@ public class NetworkHandler
 				else if (i==1) 
 				{	
 					connectedPlayers = Integer.parseInt(cur.trim());
-					this.playerAddresses  = new InetAddress[connectedPlayers];
-					this.playerPorts      = new int[connectedPlayers];
+					this.playerAddresses  = new ArrayList<InetAddress>();
+					this.playerPorts      = new ArrayList<Integer>();
+					
+					// for host
+					playerAddresses.add(InetAddress.getByName(hostAddress));
+					playerPorts.add(hostPort);	
+					
 					board.setNumPlayers(connectedPlayers+1);
 				}
 				
-				else if (i%2 == 0) playerAddresses[j] = InetAddress.getByName(cur.trim());
+				else if (i==2)
+				{
+					totalPlayers = Integer.parseInt(cur.trim());
+					aiPlayers    = totalPlayers - connectedPlayers - 1 ;
+					board.setNumPlayers(totalPlayers);
+				}
+				
+				else if (i%2 == 1) playerAddresses.add(InetAddress.getByName(cur.trim()));
 				else
 				{
-					playerPorts[j] = Integer.parseInt(cur.trim());
+					playerPorts.add(Integer.parseInt(cur.trim()));
 					j += 1;
 				}
 				
 				i+=1;				
-			}
-			
-			// for host
-			playerAddresses[0] = InetAddress.getByName(hostAddress);
-			playerPorts[0]     = hostPort;							
+			}									
 		}
 		catch (Exception e) {System.out.println(e+"\n");}		
 		
 		//for (int j = 0 ; j<connectedPlayers ; j++)
 		//{
-		//	System.out.println(playerAddresses[j].getHostName());
-		//	System.out.println(playerPorts[j]);
+		//	System.out.println(playerAddresses.get(j).getHostName());
+		//	System.out.println(playerPorts.get(j));
 		//}		
 		
 	}
@@ -291,7 +307,7 @@ public class NetworkHandler
 		try
 		{
 			byte[] rdybuf = new byte[256];
-			DatagramPacket rdypkt = new DatagramPacket(rdybuf, rdybuf.length, playerAddresses[0] , playerPorts[0]);
+			DatagramPacket rdypkt = new DatagramPacket(rdybuf, rdybuf.length, playerAddresses.get(0) , playerPorts.get(0));
 			skt_in.send(rdypkt);	
 			System.out.println("Sent ready signal");
 		}
@@ -306,7 +322,7 @@ public class NetworkHandler
 			byte[] buf = new byte[256];
 			buf = stateData.getBytes();
 			
-			DatagramPacket packet = new DatagramPacket(buf, buf.length , playerAddresses[i] , playerPorts[i]);
+			DatagramPacket packet = new DatagramPacket(buf, buf.length , playerAddresses.get(i) , playerPorts.get(i));
 			
 			try {
 				skt_out.send(packet); 
@@ -381,7 +397,7 @@ public class NetworkHandler
 			{
 				int curPlayerNo = (i>=myPlayerNo) ? i+1 : i;
 				//System.out.println(board.players[curPlayerNo+1].isAlive());
-				if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000))
+				if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
 				{						
 					isInGame[i] = false;
 					System.out.println("Player Dropped : " + Integer.toString(curPlayerNo));
@@ -398,14 +414,24 @@ public class NetworkHandler
 		startTime = System.currentTimeMillis();
 		
 		// maintaining last receieved stats
-		lastReceived = new long[connectedPlayers];
-		isInGame     = new boolean[connectedPlayers];				
+		lastReceived = new long[totalPlayers];
+		isInGame     = new boolean[totalPlayers];
+		hostingAI    = new boolean[totalPlayers];				
 		Arrays.fill(lastReceived,System.currentTimeMillis());
 		Arrays.fill(isInGame,true);	
+		Arrays.fill(hostingAI,false);
+		
+		// which players am I hosting?
+		if isHost
+			for (int i = 1 ; i<totalPlayers ; i++)
+				if i <= aiPlayers
+					hostingAI[i] = true;	
 
 		gameStart = true;
 		updateThread.start();
-        board.startGame();
+		
+		int aiPlayersOnBoard = (isHost) ? aiPlayers : 0;
+        board.startGame(aiPlayersOnBoard);
 	}
 	
 	//public static void main(String[] args) 
