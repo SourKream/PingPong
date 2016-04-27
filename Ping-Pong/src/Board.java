@@ -65,6 +65,20 @@ public class Board extends JPanel implements Commons {
 		this.numPlayers = players;
 	}
 	
+	public void startAIPlayer (int networkID){
+		int id = getPlayerByNetworkID(networkID);
+		players[id] = new AIPlayer(id+1, this);
+		players[id].setNetworkPlayerNumber(networkID);
+		((AIPlayer) players[id]).startPlaying();
+	}
+	
+    public int getPlayerByNetworkID (int id){
+    	for (int i=0; i<players.length; i++)
+    		if (players[i].getNetworkPlayerNumber()==id)
+    			return i;
+    	return -1;
+    }
+	
     public void startGame(){
     	
     	// Assigning Network Player Number to all players
@@ -318,7 +332,6 @@ public class Board extends JPanel implements Commons {
         timer.cancel();
     }
     
-
     private void checkCollision() {
 
         if (!players[0].isAlive()) {
