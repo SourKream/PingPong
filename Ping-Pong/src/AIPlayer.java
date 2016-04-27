@@ -3,7 +3,7 @@ import java.awt.event.KeyEvent;
 public class AIPlayer extends Player implements Runnable {
 	
 	private Board board;
-	private int SleepTime = 20;
+	private int SleepTime = 200;
 
 	public AIPlayer(int num, Board b){
 		super(num);					
