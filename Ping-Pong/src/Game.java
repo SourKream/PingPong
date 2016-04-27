@@ -9,14 +9,20 @@ public class Game extends JFrame {
 
 	private Board board;
 	
-    public Game(int i, int numPlayers, String hostAddress) {
-        
-        initUI(i, numPlayers, hostAddress);
-    }
+	public Game(int i, String hostAddress_or_numPlayers){
+		initUI(i, hostAddress_or_numPlayers);
+	}
     
-    private void initUI(int i, int numPlayers, String hostAddress) {
-        board = new Board (numPlayers);
-        
+    private void initUI(int i, String hostAddress_or_numPlayers) {
+		
+		if (i==0){	// if host
+        board = new Board (Integer.parseInt(hostAddress_or_numPlayers));
+		}
+		else{	// if client
+		board = new Board (0);	// don't know now, will set later
+		}
+		
+	
         Border thickBorder = new LineBorder(Commons.BorderColor, Commons.BORDER);
         board.setBorder(thickBorder);
         add(board);
@@ -31,11 +37,11 @@ public class Game extends JFrame {
         setResizable(false);
         setVisible(true);
 		
-		if (i==0){
-			NetworkHandler nwh = new NetworkHandler(board,numPlayers-1);
+		if (i==0){	// host
+			NetworkHandler nwh = new NetworkHandler(board,Integer.parseInt(hostAddress_or_numPlayers)-1);
 		}		
-		else {
-			NetworkHandler nwh = new NetworkHandler(board,numPlayers-1, hostAddress, 1231);
+		else {	// client
+			NetworkHandler nwh = new NetworkHandler(board, hostAddress_or_numPlayers, 1231);
 		}
 		
     }
@@ -45,7 +51,7 @@ public class Game extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() { 				
-                Game game = new Game(Integer.parseInt(args[0]),Integer.parseInt(args[1]),args[2]);
+                Game game = new Game(Integer.parseInt(args[0]),args[1]);
                 game.setVisible(true); 
             }
         });
