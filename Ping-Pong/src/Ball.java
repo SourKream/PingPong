@@ -1,4 +1,5 @@
 import java.text.DecimalFormat;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.ImageIcon;
 
@@ -9,6 +10,7 @@ public class Ball extends Sprite implements Commons {
     public float speedup = (float)BALL_NORMAL_SPEED;	
     private int speedupCounter;
 	DecimalFormat twoDForm;
+	public int lastPlayerToHit;
 
     public Ball() {
 
@@ -43,8 +45,8 @@ public class Ball extends Sprite implements Commons {
     
     private void resetState() {
         
-        x = INIT_BALL_X;
-        y = INIT_BALL_Y;
+        x = INIT_BALL_X + ThreadLocalRandom.current().nextInt(0, 50);
+        y = INIT_BALL_Y + ThreadLocalRandom.current().nextInt(0, 50);
     }
 
     public void setXDir(float x) {
