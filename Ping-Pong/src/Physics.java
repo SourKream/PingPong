@@ -42,17 +42,29 @@ public class Physics implements Commons {
 	public static boolean ballHitPlayersWall(Ball ball, Player player){
 		
 		switch (player.playerNumber){
-		case 1:	if (ball.getRect().getMaxY()>=Commons.BOTTOM_EDGE)
+		case 1:	if (ball.getRect().getMaxY()>=Commons.BOTTOM_EDGE){
+					while (ball.getRect().getMaxY()>=Commons.BOTTOM_EDGE)
+						ball.setY(ball.getY()-(float)0.1);
 					return true;
+				}
 				break;
-		case 2:	if (ball.getRect().getMinX()<=Commons.BORDER)
+		case 2:	if (ball.getRect().getMinX()<=Commons.BORDER){
+					while (ball.getRect().getMinX()<=Commons.BORDER)
+						ball.setX(ball.getX()+(float)0.1);
 					return true;
+				}	
 				break;
-		case 3:	if (ball.getRect().getMinY()<=Commons.BORDER)
+		case 3:	if (ball.getRect().getMinY()<=Commons.BORDER){
+					while (ball.getRect().getMinY()<=Commons.BORDER)
+						ball.setY(ball.getY()+(float)0.1);
 					return true;
+				}
 				break;
-		case 4: if (ball.getRect().getMaxX()>=Commons.BOTTOM_EDGE)
+		case 4: if (ball.getRect().getMaxX()>=Commons.BOTTOM_EDGE){
+					while (ball.getRect().getMaxX()>=Commons.BOTTOM_EDGE)
+						ball.setX(ball.getX()-(float)0.1);
 					return true;
+				}
 		}
 		return false;
 	}
