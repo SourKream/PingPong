@@ -61,6 +61,10 @@ public class Board extends JPanel implements Commons {
         timer = new Timer();
     }
     
+	public void setNumPlayers(int players){
+		this.numPlayers = players;
+	}
+	
     public void startGame(){
     	
     	// Assigning Network Player Number to all players

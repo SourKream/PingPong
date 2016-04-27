@@ -27,7 +27,7 @@ public class NetworkHandler
 	private Thread updateThread;
 				
 	public NetworkHandler(Board board, int connectedPlayers)
-	{
+	{	// for host
 		this.board  = board;
 		this.isHost = true;
 		this.connectedPlayers = connectedPlayers;
@@ -43,17 +43,18 @@ public class NetworkHandler
 		initHost();
 	}
 	
-	public NetworkHandler(Board board, int connectedPlayers, String address, int port)
-	{
+	public NetworkHandler(Board board, String address, int port)
+	{	// for client
 		this.board  = board;
-		this.isHost = false;
-		this.connectedPlayers = connectedPlayers;
-		this.playerAddresses  = new InetAddress[connectedPlayers];
-		this.playerPorts      = new int[connectedPlayers];				
+		this.isHost = false;		
 		this.timer			  = new Timer();
 		this.gameStart        = false;
 			
 		this.board.setNWH(this);
+		
+		//this.connectedPlayers = connectedPlayers;
+		//this.playerAddresses  = new InetAddress[connectedPlayers];
+		//this.playerPorts      = new int[connectedPlayers];				
 		
 		defineUpdateThread();
 		initClient(address, port);
@@ -152,6 +153,7 @@ public class NetworkHandler
 		for (int i = 0 ; i<connectedPlayers ; i++)
 		{
 			String to_send = Integer.toString(i+1); 	// player number (0 for host, 1,2... for others)
+			to_send       += "," + Integer.toString(connectedPlayers);
 			
 			for (int j = 0 ; j<connectedPlayers ; j++)
 				if (j!=i)
@@ -211,12 +213,12 @@ public class NetworkHandler
 				catch (SocketTimeoutException e) { System.out.println("Client: waiting for acknowledgement");}
 			}	
 		}
-		catch(Exception e) {System.out.print("Network Error: Client\n");}
+		catch(Exception e) {System.out.println("Network Error: Client");}
 		
 		// received data from other players, filling playerAddresses and playerPorts
-		setPNoAddressPorts(ackdata, hostAddress, hostPort);
+		setNumPlayersPNoAddressPorts(ackdata, hostAddress, hostPort);
 		System.out.println("got acknowledgement: " + ackdata);
-		
+		System.out.println("connected players (excluding me): " + Integer.toString(connectedPlayers));
 		// initialising skt_out
 		try	{skt_out = new DatagramSocket();}		
 		catch(Exception e){System.out.print("Client: could not initialise out_port");}
@@ -235,26 +237,31 @@ public class NetworkHandler
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 			skt_in.receive(packet);	
 		}
-		catch (Exception e) {System.err.println("Client: Couldn't receive start signal");}
+		catch (Exception e) {System.err.println("Client: Couldn't receive start signal");System.exit(0);}
 		
 		startGame();
 	}
 	
-	private void setPNoAddressPorts(String ackdata, String hostAddress, int hostPort)
+	private void setNumPlayersPNoAddressPorts(String ackdata, String hostAddress, int hostPort)
 	{
 		try
-		{
-			// for host
-			playerAddresses[0] = InetAddress.getByName(hostAddress);
-			playerPorts[0]     = hostPort;
-			
+		{				
 			// parsing for other players
 			int i = 0;
 			int j = 1;		// to fill for other players
 			for (String cur: ackdata.split(","))
 			{
 				if (i==0) myPlayerNo = Integer.parseInt(cur.trim());
-				else if (i%2 == 1) playerAddresses[j] = InetAddress.getByName(cur.trim());
+				
+				else if (i==1) 
+				{	
+					connectedPlayers = Integer.parseInt(cur.trim());
+					this.playerAddresses  = new InetAddress[connectedPlayers];
+					this.playerPorts      = new int[connectedPlayers];
+					board.setNumPlayers(connectedPlayers+1);
+				}
+				
+				else if (i%2 == 0) playerAddresses[j] = InetAddress.getByName(cur.trim());
 				else
 				{
 					playerPorts[j] = Integer.parseInt(cur.trim());
@@ -263,8 +270,12 @@ public class NetworkHandler
 				
 				i+=1;				
 			}
+			
+			// for host
+			playerAddresses[0] = InetAddress.getByName(hostAddress);
+			playerPorts[0]     = hostPort;							
 		}
-		catch (Exception e) {System.out.println(e+"\n");}
+		catch (Exception e) {System.out.println(e+"\n");}		
 		
 		//for (int j = 0 ; j<connectedPlayers ; j++)
 		//{
@@ -391,10 +402,9 @@ public class NetworkHandler
 		isInGame     = new boolean[connectedPlayers];				
 		Arrays.fill(lastReceived,System.currentTimeMillis());
 		Arrays.fill(isInGame,true);	
-		System.out.println("Imma set gameStart = true");
+
 		gameStart = true;
 		updateThread.start();
-		System.out.println("Ive set gameStart = true");
         board.startGame();
 	}
 	
