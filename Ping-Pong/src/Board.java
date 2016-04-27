@@ -510,7 +510,7 @@ public class Board extends JPanel implements Commons {
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Float.toString(players[playerNumber].paddle.x).concat(",");
+	    	data += Float.toString(players[playerNumber].paddle.getPosition()).concat(",");
     	} else if (packetType == 2) {
     		
 	    	data += "b,";

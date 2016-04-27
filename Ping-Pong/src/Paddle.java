@@ -93,6 +93,14 @@ public class Paddle extends Sprite implements Commons {
             dx = 0;
         }
     }
+   
+    public float getPosition(){
+
+    	if (movingAxis==0)
+    		return x;
+    	else
+    		return y;
+    }
     
     public void setPosition(int position){
     	
