@@ -449,7 +449,7 @@ public class Board extends JPanel implements Commons {
     		int playerNumber = Integer.parseInt(data[1].trim());    		
     		for (int i=0; i<4; i++)
 				if (players[i].getNetworkPlayerNumber()==playerNumber){					
-					int packetNumber = Integer.parseInt(data[2]);
+					int packetNumber = Integer.parseInt(data[2].trim());
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
 						float position = Float.valueOf(data[3]);
@@ -582,9 +582,9 @@ public class Board extends JPanel implements Commons {
     		
 	    	data += "e,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
-	    	data += Integer.toString(players[playerNumber].networkPacketNumber);
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Integer.toString(powerUpNum).concat(",");	    	
+	    	data += Integer.toString(powerUpNum);	  
     	} 
     	return data;
     }
