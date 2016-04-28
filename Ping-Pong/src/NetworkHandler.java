@@ -406,8 +406,8 @@ public class NetworkHandler
 					//System.out.println("i : " + i);
 					//System.out.println("lastRec[i] : " + lastReceived[i]);
 					
-					//System.out.println(board.players[curPlayerNo+1].isAlive());
-					if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
+					//System.out.println(i + " is alive : " + board.players[board.getPlayerByNetworkID(i)].isAlive());
+					if ((curTime - startTime > 5000) && board.players[board.getPlayerByNetworkID(i)].isAlive()  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
 					{						
 						//isInGame[i] = false;
 						System.out.println("Player Dropped : " + Integer.toString(i));
