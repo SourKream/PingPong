@@ -352,7 +352,10 @@ public class NetworkHandler
 					{
 						byte[] buf = new byte[256];
 						DatagramPacket packet = new DatagramPacket(buf, buf.length);						
-						skt_in.receive(packet);
+						
+						try {skt_in.receive(packet);}
+						catch (SocketTimeoutException e) {System.out.println("haven't received a packet in long :'("); continue;}
+						
 						String update = new String(packet.getData());
 						
 						//System.out.println("received a packet");
