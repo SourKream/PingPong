@@ -24,13 +24,13 @@ public class Paddle extends Sprite implements Commons {
     
     public void makeBig(){
 
-    	String PaddleImagePath = "../res/Paddles/";
+    	String PaddleImagePath = "/res/Paddles/";
     	if (movingAxis == 0)
     		PaddleImagePath += ("HBpaddle" + Integer.toString(colour) + ".png");
     	else
     		PaddleImagePath += ("VBpaddle" + Integer.toString(colour) + ".png");
 
-    	ImageIcon ii = new ImageIcon(PaddleImagePath);
+    	ImageIcon ii = new ImageIcon(getClass().getResource(PaddleImagePath));
         image = ii.getImage();
 
         i_width = image.getWidth(null);
@@ -39,13 +39,13 @@ public class Paddle extends Sprite implements Commons {
     
     public void makeSmall(){
 
-    	String PaddleImagePath = "../res/Paddles/";
+    	String PaddleImagePath = "/res/Paddles/";
     	if (movingAxis == 0)
     		PaddleImagePath += ("HSpaddle" + Integer.toString(colour) + ".png");
     	else
     		PaddleImagePath += ("VSpaddle" + Integer.toString(colour) + ".png");
 
-    	ImageIcon ii = new ImageIcon(PaddleImagePath);
+    	ImageIcon ii = new ImageIcon(getClass().getResource(PaddleImagePath));
         image = ii.getImage();
 
         i_width = image.getWidth(null);

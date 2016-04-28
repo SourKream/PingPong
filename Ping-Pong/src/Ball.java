@@ -21,7 +21,7 @@ public class Ball extends Sprite implements Commons {
         xdir = Math.round((1 * (float)Math.cos(Math.PI/4)) * 100) / 100f;
         ydir = Math.round((-1 * (float)Math.cos(Math.PI/4)) * 100) / 100f;
 
-        ImageIcon ii = new ImageIcon("../res/ball.png");
+        ImageIcon ii = new ImageIcon(getClass().getResource("/res/ball.png"));
         image = ii.getImage();
         i_width = image.getWidth(null);
         i_heigth = image.getHeight(null);

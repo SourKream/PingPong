@@ -59,10 +59,6 @@ public class NetworkHandler
 			
 		this.board.setNWH(this);
 		
-		//this.connectedPlayers = connectedPlayers;
-		//this.playerAddresses  = new InetAddress[connectedPlayers];
-		//this.playerPorts      = new int[connectedPlayers];				
-		
 		defineUpdateThread();
 		initClient(address, port);
 	}
@@ -73,7 +69,7 @@ public class NetworkHandler
 		// receive UDP addresses one by one from all other players
 		// send UDP addesses of other players to each
 		
-		try	{skt_in = new DatagramSocket(1231) ; skt_in.setSoTimeout(10000);}		
+		try	{skt_in = new DatagramSocket(1231) ; skt_in.setSoTimeout(15000);}		
 		catch(Exception e){System.out.print("Host could not initialise in_port");}
 		
 		getClients();				// fill playerAddresses and playerPorts
@@ -151,7 +147,7 @@ public class NetworkHandler
 				}
 			}
 		}
-		catch(Exception e){System.out.print(e + "\n");}
+		catch(Exception e){System.out.print(e + "\n");System.exit(0);}
 		
 		return;
 	}
