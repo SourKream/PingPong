@@ -19,7 +19,8 @@ class DetailsDialog {
     public static void display(int i) {
 
     	 
-        String[] args = new String[4];
+        String[] args = {"","","",""};
+        
         String[] items = {"1", "2", "3", "4"};
         String[] items_2 = {"0", "1", "2", "3"};
         String[] items_3 = {"Low", "Medium", "High"};
