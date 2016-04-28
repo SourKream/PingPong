@@ -410,7 +410,7 @@ public class NetworkHandler
 					if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
 					{						
 						//isInGame[i] = false;
-						//System.out.println("Player Dropped : " + Integer.toString(i));
+						System.out.println("Player Dropped : " + Integer.toString(i));
 						dropped[i] = true;
 					}
 					

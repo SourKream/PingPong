@@ -78,9 +78,6 @@ public class Board extends JPanel implements Commons {
 		int id = getPlayerByNetworkID(networkID);
 		players[id] = new AIPlayer(id+1, this);
 		players[id].setNetworkPlayerNumber(networkID);
-		
-		System.out.println("SETTING AI NETOWRK ID To : "+ Integer.toString(players[id].getNetworkPlayerNumber()));
-		
 		((AIPlayer) players[id]).startPlaying();
 	}
 	
@@ -545,10 +542,7 @@ public class Board extends JPanel implements Commons {
     	
     	String data = "";
     	
-    	if (packetType == 1){
-    		
-System.out.println("Sending data for player num: " + Integer.toString(playerNumber) + " with network num: "+ Integer.toString(players[playerNumber].getNetworkPlayerNumber()));
-    	
+    	if (packetType == 1){    	
 	    	data += "a,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
