@@ -21,7 +21,7 @@ class DetailsDialog {
     	 
         String[] args = new String[4];
         String[] items = {"1", "2", "3", "4"};
-        String[] items_2 = {"1", "2", "3"};
+        String[] items_2 = {"0", "1", "2", "3"};
         String[] items_3 = {"Low", "Medium", "High"};
         
         //final String[] items_2 = new String[4];
@@ -61,14 +61,16 @@ class DetailsDialog {
 	        		args[0] = "0";
 	        		args[1] = Integer.toString(humanPlayer-1);
 	        		args[2] = (String) combo_2.getSelectedItem();
-	        		args[3] = host_ip.getText();
 
-	        		System.out.println("Input:"+args[0]+args[1]+args[2]+args[3]);
+	        		System.out.println("Input:"+args[0]+args[1]+args[2]);
 	        	}
 	        	else
 	        	{
 	        		args[0] = "1";
-	        		args[1] = host_ip.getText();
+	        		args[1] =  host_ip.getText();
+	        		args[1] = args[1].trim();
+	        		
+	        		System.out.println("Input:"+args[0]+args[1]);
 	        	}     	
 	        	Game game = new Game(Integer.parseInt(args[0]), args);
 	            game.setVisible(true); 
