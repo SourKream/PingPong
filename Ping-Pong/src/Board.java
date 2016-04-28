@@ -176,7 +176,6 @@ public class Board extends JPanel implements Commons {
     	PlayersInMyControl.add(0);
 
         balls.add(new Ball());
-        balls.add(new Ball());
         players = new Player[4];
         for (int i=0; i<4; i++)
         	players[i] = new Player(i+1);
@@ -419,17 +418,16 @@ public class Board extends JPanel implements Commons {
         	}	       
     }
     
-    // TODO: Application of PowerUp to the correct player
-    // TODO: PowerUp Applied data packet
     private void ApplyPowerUpToPlayer (PowerUp powerUp, int index){
-//    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(players[index].playerNumber));
     	
     	switch(powerUp.powerUpType){
     	case 0: players[index].setBigPaddle();
     			nwh.sendStateInfo(updateStateOnNetwork(3,index));
     			break;
-    	case 1: players[index].extraLife();
-    			nwh.sendStateInfo(updateStateOnNetwork(3,index));
+    	case 1: if (players[index].isAlive()){
+					players[index].extraLife();
+					nwh.sendStateInfo(updateStateOnNetwork(3,index));
+				}
     			break;
     	case 2: if (PlayersInMyControl.contains(index)){
     				balls.add(new Ball());

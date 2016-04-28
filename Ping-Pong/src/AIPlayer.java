@@ -3,6 +3,8 @@ import java.awt.event.KeyEvent;
 public class AIPlayer extends Player implements Runnable {
 	
 	private Board board;
+	
+	// Sleep time of the thread for AI player. Sets difficulty of AI Player.
 	public static int SleepTime = 20;
 
 	public AIPlayer(int num, Board b){
@@ -29,6 +31,9 @@ public class AIPlayer extends Player implements Runnable {
 		t.start();		
 	}
 		
+	// Rule based AI
+	// Follows the projection of the ball on the wall
+	// for the ball that is closest to the paddle
 	public void movePaddle (){		
 		if (playerNumber == 2){
 			int min = 0;
@@ -42,7 +47,7 @@ public class AIPlayer extends Player implements Runnable {
 				paddle.keyPressed(KeyEvent.VK_RIGHT);
 			else
 				paddle.keyReleased(KeyEvent.VK_RIGHT);
-		}else if (playerNumber == 4){
+		} else if (playerNumber == 4){
 			int min = 0;
 			for (int i=0; i<board.balls.size(); i++){
 				if (board.balls.get(i).x > board.balls.get(min).x)

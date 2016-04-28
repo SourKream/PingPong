@@ -9,7 +9,7 @@ public interface Commons {
     public static final int AURA = 20;
     public static final int BOTTOM_EDGE = HEIGHT - BORDER;
     public static final int INIT_BALL_X = WIDTH/2 + 30;
-    public static final int INIT_BALL_Y = BOTTOM_EDGE - 30;    
+    public static final int INIT_BALL_Y = BOTTOM_EDGE - 40;    
     public static final int DELAY = 1000;
     public static final int PERIOD = 15;
     public static final int SIZE = 40;		//Corner Size

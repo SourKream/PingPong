@@ -5,27 +5,31 @@ import javax.swing.ImageIcon;
 
 public class Ball extends Sprite implements Commons {
 
+	// Ball movement directions
     private float xdir;
     private float ydir;
+    
+    // SpeedUp factor of ball
     public float speedup = (float)BALL_NORMAL_SPEED;	
     private int speedupCounter;
-	DecimalFormat twoDForm;
-	public int lastPlayerToHit;
+
+    public int lastPlayerToHit;
 
     public Ball() {
 
+    	// Initial movement direction
         xdir = Math.round((1 * (float)Math.cos(Math.PI/4)) * 100) / 100f;
         ydir = Math.round((-1 * (float)Math.cos(Math.PI/4)) * 100) / 100f;
 
         ImageIcon ii = new ImageIcon("../res/ball.png");
         image = ii.getImage();
-
         i_width = image.getWidth(null);
         i_heigth = image.getHeight(null);
         
         resetState();
     }
 
+    // Called at every Timestep
     public void move() {
         
         x = Math.round((x + speedup * xdir) * 100) / 100f;
@@ -46,7 +50,7 @@ public class Ball extends Sprite implements Commons {
     private void resetState() {
         
         x = INIT_BALL_X + ThreadLocalRandom.current().nextInt(0, 100);
-        y = INIT_BALL_Y + ThreadLocalRandom.current().nextInt(0, 50);
+        y = INIT_BALL_Y;
     }
 
     public void setXDir(float x) {
