@@ -1,0 +1,17 @@
+Following are the deviations of our final game from the details mentioned in our design document.
+
+- The number of initial lives are hard coded
+
+We mentioned that the host would decide the initial number of lives at the begining of every game. However, it later seemed unnecessary to ask for the initial lives again and again and increase the time taken to start the game, when it could simply be hard coded to an ideal value.
+
+- Balls on the board do not collide
+
+We mentioned in the design document that since it was possible to have multiple balls on the board, the balls would collide and bounce with each other. However, in actual implementation when we tested this out the gameplay became very non intuitive. Since the board is a relatively small one, colliding the balls could lead to sudden direction changes that did not look very intuitive and ultimately spoilt the gameplay. We thought that letting the balls pass through each other made for a smoother game. In any case, the collision of the balls is a rare event.
+
+- No trained AI
+
+The ruled based AI itself was performing very good as compared to the human players and we could control its difficulty easily by varying the Sleep time of its thread. It follows an optimal strategy game for upto 2 balls and a near optimal for more than 2 balls.
+
+- Extra features not implemented
+
+We did not implement the extra features that were mentioned in the design document .i.e. sound effects and sticky paddle power up. 
