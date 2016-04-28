@@ -102,13 +102,18 @@ public class NetworkHandler
 		// ready to roll => sending start signal to all players and starting my game
 		for (int i = 0 ; i<connectedPlayers ; i++)
 		{
-			try
+			for (int j = 0 ; j<5 ; j++)
 			{
-				byte[] buf = new byte[256];
-				DatagramPacket packet = new DatagramPacket(buf, buf.length, playerAddresses.get(i) , playerPorts.get(i));
-				skt_in.send(packet);	
+				try
+				{
+					String strt = "start";
+					byte[] buf = new byte[256];
+					buf = strt.getBytes();
+					DatagramPacket packet = new DatagramPacket(buf, buf.length, playerAddresses.get(i) , playerPorts.get(i));
+					skt_in.send(packet);	
+				}
+				catch (Exception e) {System.err.println("Host: Couldn't send start signal");}
 			}
-			catch (Exception e) {System.err.println("Host: Couldn't send start signal");}
 		}
 		System.out.println("Sent all start signals");
 		
@@ -239,13 +244,21 @@ public class NetworkHandler
 		sendReadySignal();	
 		
 		// start on receiving start signal
-		try
+		boolean toStart = false;
+		
+		while (!toStart)
 		{
-			byte[] buf = new byte[256];
-			DatagramPacket packet = new DatagramPacket(buf, buf.length);
-			skt_in.receive(packet);	
+			try
+			{
+				byte[] buf = new byte[256];
+				DatagramPacket packet = new DatagramPacket(buf, buf.length);
+				skt_in.receive(packet);	
+				String strt = new String(packet.getData());
+				if (strt=="start")
+					toStart = true;
+			}
+			catch (Exception e) {System.err.println("Client: Couldn't receive start signal");System.exit(0);}
 		}
-		catch (Exception e) {System.err.println("Client: Couldn't receive start signal");System.exit(0);}
 		
 		startGame();
 	}
@@ -359,7 +372,7 @@ public class NetworkHandler
 						String update = new String(packet.getData());
 						
 						//System.out.println("received a packet");
-						//System.out.println("received: " + update);
+						System.out.println("received: " + update);
 						// call board update functions
 						board.updateStateFromNetwork(update);
 						
@@ -410,7 +423,7 @@ public class NetworkHandler
 					//System.out.println("lastRec[i] : " + lastReceived[i]);
 					
 					//System.out.println(i + " is alive : " + board.players[board.getPlayerByNetworkID(i)].isAlive());
-					if ((curTime - startTime > 5000) && board.players[board.getPlayerByNetworkID(i)].isAlive()  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
+					if ((curTime - startTime > 5000) && board.players[board.getPlayerByNetworkID(i)].isAlive()  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i] && board.players[board.getPlayerByNetworkID(myPlayerNo)].isAlive())
 					{						
 						//isInGame[i] = false;
 						System.out.println("Player Dropped : " + Integer.toString(i));
