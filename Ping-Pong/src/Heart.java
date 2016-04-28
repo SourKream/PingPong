@@ -20,11 +20,11 @@ public class Heart extends Sprite implements Commons {
     
     public void makeHearts(){
 
-    	String HeartImagePath = "../res/Hearts/";
+    	String HeartImagePath = "res/Hearts/";
     		
     		HeartImagePath += ("Life" + Integer.toString(colour) + ".png");
 
-    	ImageIcon ii = new ImageIcon(HeartImagePath);
+    	ImageIcon ii = new ImageIcon(getClass().getResource(HeartImagePath));
         image = ii.getImage();
 
         i_width = image.getWidth(null);
