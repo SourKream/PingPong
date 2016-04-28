@@ -40,7 +40,7 @@ public class Game extends JFrame {
         	setSize(Commons.WIDTH + 100, Commons.HEIGHT);
         }
         if(OsUtils.isMac())
-        	setSize(Commons.WIDTH, Commons.HEIGHT + 22);
+        	setSize(Commons.WIDTH + 100, Commons.HEIGHT + 22);
         
         setLocationRelativeTo(null);
         setResizable(false);
