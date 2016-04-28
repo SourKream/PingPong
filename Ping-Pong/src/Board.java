@@ -144,7 +144,10 @@ public class Board extends JPanel implements Commons {
 				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
 				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
 				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
-				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
 			}
 
 		// Send Power Up Info
@@ -253,6 +256,7 @@ public class Board extends JPanel implements Commons {
 
         g2d.setColor(Color.BLACK);
         g2d.setFont(font);
+        
         g2d.drawString("Balls: " + Integer.toString(balls.size()),
 				        Commons.WIDTH + 115 - metr.stringWidth(message),
 				        50); 
@@ -265,6 +269,7 @@ public class Board extends JPanel implements Commons {
 		        g2d.drawString("P" + Integer.toString(i+1) + ": " + Integer.toString(players[i].lives()),
 		                Commons.WIDTH + 115 - metr.stringWidth(message),
 		                60+30*(i+2));    	
+
     }
     
     private void gameFinished(Graphics2D g2d) {
@@ -305,7 +310,7 @@ public class Board extends JPanel implements Commons {
         		balls.get(i).move();
             for (int i=0; i<PlayersInMyControl.size(); i++){
             	players[PlayersInMyControl.get(i)].paddle.move();
-            	nwh.sendStateInfo(updateStateOnNetwork(1,i));
+            	nwh.sendStateInfo(updateStateOnNetwork(1,PlayersInMyControl.get(i)));
             }
             checkCollision();
             checkPaddle();
@@ -323,7 +328,7 @@ public class Board extends JPanel implements Commons {
     private boolean ballInMyArea(Ball ball){
     	
     	for (int i=0; i<PlayersInMyControl.size(); i++)
-	    	if (Physics.testIntersection(players[i].paddle.getVibeRectangle(), ball.getCircle()))
+	    	if (Physics.testIntersection(players[PlayersInMyControl.get(i)].paddle.getVibeRectangle(), ball.getCircle()))
 	    		return true;
     	return false;
     }
@@ -426,9 +431,11 @@ public class Board extends JPanel implements Commons {
     	case 1: players[index].extraLife();
     			nwh.sendStateInfo(updateStateOnNetwork(3,index));
     			break;
-    	case 2: if (PlayersInMyControl.contains(index))
+    	case 2: if (PlayersInMyControl.contains(index)){
     				balls.add(new Ball());
     				nwh.sendStateInfo(updateStateOnNetwork(7,index));
+    				nwh.sendStateInfo(updateStateOnNetwork(2,index,balls.size()-1));
+    			}
     			break;
     	case 3: players[index].hasShield = true;
 				players[index].shieldTimeCounter = 0;
@@ -547,8 +554,7 @@ public class Board extends JPanel implements Commons {
     	
     	String data = "";
     	
-    	if (packetType == 1){
-    	
+    	if (packetType == 1){    	
 	    	data += "a,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");

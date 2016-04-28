@@ -45,7 +45,7 @@ public class Ball extends Sprite implements Commons {
     
     private void resetState() {
         
-        x = INIT_BALL_X + ThreadLocalRandom.current().nextInt(0, 50);
+        x = INIT_BALL_X + ThreadLocalRandom.current().nextInt(0, 100);
         y = INIT_BALL_Y + ThreadLocalRandom.current().nextInt(0, 50);
     }
 
