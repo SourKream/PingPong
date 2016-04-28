@@ -2,7 +2,7 @@ import java.awt.Graphics2D;
 
 public class Player implements Commons{
 	
-	private int networkPlayerNumber;
+	private int networkPlayerNumber = -1;
 	public int networkPacketNumber;
 	
 	public Paddle paddle;
@@ -16,6 +16,11 @@ public class Player implements Commons{
 							  // Player 3 at 12
 							  // Player 4 at 3
 
+	public Player(){
+		System.out.println("SOMETHING IS WRONG");
+	}
+
+	
 	public Player(int num){
 		
 		playerNumber = num;

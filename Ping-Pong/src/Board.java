@@ -247,9 +247,14 @@ public class Board extends JPanel implements Commons {
 
         g2d.setColor(Color.BLACK);
         g2d.setFont(font);
-        g2d.drawString("Lives: " + Integer.toString(players[0].lives()),
-                Commons.WIDTH - metr.stringWidth(message),
-                30);    	
+        g2d.drawString("Balls: " + Integer.toString(balls.size()),
+				        Commons.WIDTH - 100 - metr.stringWidth(message),
+				        30);    	
+//	    for (int i=0; i<4; i++)
+//	    	if (players[i].isAlive())
+//		        g2d.drawString("Lives P" + Integer.toString(i+1) + ": " + Integer.toString(players[i].lives()),
+//		                Commons.WIDTH - 100 - metr.stringWidth(message),
+//		                30+20*i);    	
     }
     
     private void gameFinished(Graphics2D g2d) {
@@ -323,13 +328,17 @@ public class Board extends JPanel implements Commons {
     	for(int i=0; i<4; i++){
     		if(players[i].hasBigPaddle){
         		players[i].bigPaddleTimeCounter += 1;
-        		if(players[i].bigPaddleTimeCounter == Commons.POWER_UP_TIME)
+        		if(players[i].bigPaddleTimeCounter == Commons.POWER_UP_TIME){
         			players[i].setSmallPaddle();
+        			nwh.sendStateInfo(updateStateOnNetwork(3,i));
+        		}
         	}	
     		if(players[i].hasShield){
         		players[i].shieldTimeCounter += 1;
-        		if(players[i].shieldTimeCounter == Commons.POWER_UP_TIME)
+        		if(players[i].shieldTimeCounter == Commons.POWER_UP_TIME){
         			players[i].hasShield = false;
+        			nwh.sendStateInfo(updateStateOnNetwork(3,i));
+        		}
         	}
     	}   	    			
     }
@@ -366,12 +375,11 @@ public class Board extends JPanel implements Commons {
         	if (powerUps[i].isActive())
         		if (Physics.testIntersection(powerUps[i].getCircle(), balls.get(j).getCircle())){
         			powerUps[i].Disable();
-        			if (powerUps[i].powerUpType==4)
+        			if (powerUps[i].powerUpType==4){
         				ApplyPowerUpToPlayer(powerUps[i], j);
-        			else
+        				nwh.sendStateInfo(updateStateOnNetwork(6,balls.get(j).lastPlayerToHit,j));
+        			} else
         				ApplyPowerUpToPlayer(powerUps[i], balls.get(j).lastPlayerToHit);
-		        	if (PlayersInMyControl.contains(balls.get(j).lastPlayerToHit))
-		        		nwh.sendStateInfo(updateStateOnNetwork(6,balls.get(j).lastPlayerToHit,i)); // TODO
         			return;
         		}
 
@@ -403,45 +411,26 @@ public class Board extends JPanel implements Commons {
     	
     	switch(powerUp.powerUpType){
     	case 0: players[index].setBigPaddle();
+    			nwh.sendStateInfo(updateStateOnNetwork(3,index));
     			break;
     	case 1: players[index].extraLife();
+    			nwh.sendStateInfo(updateStateOnNetwork(3,index));
     			break;
-    	case 2: balls.add(new Ball());
+    	case 2: if (PlayersInMyControl.contains(index))
+    				balls.add(new Ball());
+    				nwh.sendStateInfo(updateStateOnNetwork(7,index));
     			break;
     	case 3: players[index].hasShield = true;
 				players[index].shieldTimeCounter = 0;
+    			nwh.sendStateInfo(updateStateOnNetwork(3,index));
     			break;
     	case 4: balls.get(index).increaseSpeed();
     			break;
     	default :
     	}
     }
-    
-    private void checkPowerUpApplicationToPlayer (int powerUpIndex, int playerIndex){
-    	switch(powerUps[powerUpIndex].powerUpType){
-    	case 0: if (!players[playerIndex].hasBigPaddle){
-    				System.out.println("CONFLICT IN POWER UP");
-    				players[playerIndex].setBigPaddle();
-    			}
-    			break;
-    	case 3: if (!players[playerIndex].hasShield){
-    				System.out.println("CONFLICT IN POWER UP");
-	    			players[playerIndex].hasShield = true;
-					players[playerIndex].shieldTimeCounter = 0;
-    			}
-    			break;
-    	case 4: if (balls.get(0).speedup != Commons.BALL_FAST_SPEED){
-					System.out.println("CONFLICT IN POWER UP");
-			        for (int j=0; j<balls.size(); j++)
-			        	balls.get(j).increaseSpeed();
-		    	}
-		    	break;
-    	default :
-    	}    	
-    }
-    
+        
     public void updateStateFromNetwork (String inputString){
-		System.out.println("Message: " + inputString);
 
     	String data[] = inputString.split(",");
     	String opCode = data[0];
@@ -468,10 +457,12 @@ public class Board extends JPanel implements Commons {
 						float y = Float.valueOf(data[5]);
 						float dx = Float.valueOf(data[6]);
 						float dy = Float.valueOf(data[7]);
-						players[i].setBallPosition(balls.get(ballNumber), x, y, dx, dy);
+						if (ballNumber < balls.size())
+							players[i].setBallPosition(balls.get(ballNumber), x, y, dx, dy);
 					}
 				}
     	} else if (opCode.equals("c")) {
+    		System.out.println("Message: " + inputString);
     		int playerNumber = Integer.parseInt(data[1].trim());    		
     		for (int i=0; i<4; i++)
 				if (players[i].getNetworkPlayerNumber()==playerNumber){					
@@ -479,6 +470,14 @@ public class Board extends JPanel implements Commons {
 					players[i].networkPacketNumber = packetNumber;
 					int lives = Integer.parseInt(data[3].trim());
 					players[i].setLives(lives);
+					if (data[4].trim().equals("t"))
+						players[i].hasShield = true;
+					else
+						players[i].hasShield = false;
+					if (data[5].trim().equals("t"))
+						players[i].setBigPaddle();
+					else
+						players[i].setSmallPaddle();
 				}
     	} else if (opCode.equals("d")) {
     		int playerNumber = Integer.parseInt(data[1].trim());    		
@@ -504,14 +503,26 @@ public class Board extends JPanel implements Commons {
 					}
 				}
     	} else if (opCode.equals("f")) {
-    		System.out.println("SOME POWERUP INFO RECEIVED");
+    		System.out.println("Make Ball Fast Command From Network");
     		int playerNumber = Integer.parseInt(data[1].trim());    		
     		for (int i=0; i<4; i++)
 				if (players[i].getNetworkPlayerNumber()==playerNumber){		
 					int packetNumber = Integer.parseInt(data[2].trim());
 					players[i].networkPacketNumber = packetNumber;
-					int powerUpIndex = Integer.parseInt(data[3].trim());
-					checkPowerUpApplicationToPlayer(powerUpIndex, i);
+					int ballIndex = Integer.parseInt(data[3].trim());
+					if (balls.get(ballIndex).speedup != Commons.BALL_FAST_SPEED)
+			        	balls.get(ballIndex).increaseSpeed();
+				}
+    	} else if (opCode.equals("g")) {
+    		int playerNumber = Integer.parseInt(data[1].trim());    		
+    		for (int i=0; i<4; i++)
+				if (players[i].getNetworkPlayerNumber()==playerNumber){		
+					int packetNumber = Integer.parseInt(data[2].trim());
+					players[i].networkPacketNumber = packetNumber;
+					int numBalls = Integer.parseInt(data[3].trim());
+					if (balls.size()<numBalls)
+						while(balls.size()<numBalls)
+							balls.add(new Ball());
 				}
     	}
     }
@@ -539,52 +550,67 @@ public class Board extends JPanel implements Commons {
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Integer.toString(players[playerNumber].lives());
+	    	data += Integer.toString(players[playerNumber].lives()).concat(",");
+	    	if (players[playerNumber].hasShield)
+	    		data += "t,";
+	    	else
+	    		data += "f,";
+	    	if (players[playerNumber].hasBigPaddle)
+	    		data += "t";
+	    	else
+	    		data += "f";	    	
+    	} else if (packetType == 7) {
+    		
+	    	data += "g,";
+	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
+	    	players[playerNumber].networkPacketNumber += 1;
+	    	data += Integer.toString(balls.size());
     	}
 
     	return data;
     }
     
-    public String updateStateOnNetwork (int packetType, int playerNumber, int powerUpNum){
+    public String updateStateOnNetwork (int packetType, int playerNumber, int index){
     	
         // packetType 4 -> New PowerUp Data
-        // packetType 6 -> PowerUp Applied to Player
+        // packetType 6 -> Fast Ball Applied to Ball
     	
     	String data = "";
     	if (packetType == 4) {
             
             data += "d,";
             data += Integer.toString(players[0].getNetworkPlayerNumber()).concat(",");
-            data += Integer.toString(powerUpNum).concat(",");
-            data += Integer.toString(powerUps[powerUpNum].powerUpType).concat(",");
-            data += Integer.toString((int)powerUps[powerUpNum].getX()).concat(",");
-            data += Integer.toString((int)powerUps[powerUpNum].getY()).concat(",");
-            data += Integer.toString(powerUps[powerUpNum].showTime);
+            data += Integer.toString(index).concat(",");
+            data += Integer.toString(powerUps[index].powerUpType).concat(",");
+            data += Integer.toString((int)powerUps[index].getX()).concat(",");
+            data += Integer.toString((int)powerUps[index].getY()).concat(",");
+            data += Integer.toString(powerUps[index].showTime);
         } else if (packetType == 2) {
     		
 	    	data += "b,";
 	    	data += Integer.toString(players[0].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
 	    	players[0].networkPacketNumber += 1;
-	    	data += Integer.toString(powerUpNum).concat(",");	    	
-	    	data += String.format( "%.2f", balls.get(powerUpNum).getX()).concat(",");
-	    	data += String.format( "%.2f", balls.get(powerUpNum).getY()).concat(",");
-	    	data += String.format( "%.2f", balls.get(powerUpNum).getXDir()).concat(",");
-	    	data += String.format( "%.2f", balls.get(powerUpNum).getYDir());
+	    	data += Integer.toString(index).concat(",");	    	
+	    	data += String.format( "%.2f", balls.get(index).getX()).concat(",");
+	    	data += String.format( "%.2f", balls.get(index).getY()).concat(",");
+	    	data += String.format( "%.2f", balls.get(index).getXDir()).concat(",");
+	    	data += String.format( "%.2f", balls.get(index).getYDir());
     	} else if (packetType == 6) {
     		
 	    	data += "f,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Integer.toString(powerUpNum);
+	    	data += Integer.toString(index);
     	} else if (packetType == 5) {
     		
 	    	data += "e,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Integer.toString(powerUpNum);	  
+	    	data += Integer.toString(index);	  
     	} 
     	return data;
     }

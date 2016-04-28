@@ -13,11 +13,11 @@ public interface Commons {
     public static final int DELAY = 1000;
     public static final int PERIOD = 15;
     public static final int SIZE = 40;		//Corner Size
-    public static final int INIT_LIVES = 15;
+    public static final int INIT_LIVES = 25;
     public static final int MAX_COUNT = 2500;
-    public static final int POWER_UP_TIME = 2500;
+    public static final int POWER_UP_TIME = 600;
     public static final int NUM_POWER_UPS = 10;
-    public static final int FAST_BALL_TIME = 700;
+    public static final int FAST_BALL_TIME = 800;
     public static final int BALL_FAST_SPEED = 8;
     public static final float BALL_NORMAL_SPEED = (float)4;
     public static final int PADDLE_STEP = 8;
