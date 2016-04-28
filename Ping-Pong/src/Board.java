@@ -64,9 +64,9 @@ public class Board extends JPanel implements Commons {
         
         shields = new Image[2];
         ImageIcon ii;
-        ii = new ImageIcon("../res/ShieldH.png");
+        ii = new ImageIcon(getClass().getResource("/res/ShieldH.png"));
         shields[0] = ii.getImage();
-        ii = new ImageIcon("../res/ShieldV.png");
+        ii = new ImageIcon(getClass().getResource("/res/ShieldV.png"));
         shields[1] = ii.getImage();
                 
         setDoubleBuffered(true);
@@ -512,12 +512,12 @@ public class Board extends JPanel implements Commons {
 					int ballNumber = Integer.parseInt(data[3].trim());
 					players[i].networkPacketNumber = packetNumber;
 					if (balls.get(ballNumber).lastPlayerToHit != i){
-						System.out.println("Disagreement with last player to hit the ball");
+						//System.out.println("Disagreement with last player to hit the ball");
 						balls.get(ballNumber).lastPlayerToHit = i;
 					}
 				}
     	} else if (opCode.equals("f")) {
-    		System.out.println("Make Ball Fast Command From Network");
+    		//System.out.println("Make Ball Fast Command From Network");
     		int playerNumber = Integer.parseInt(data[1].trim());    		
     		for (int i=0; i<4; i++)
 				if (players[i].getNetworkPlayerNumber()==playerNumber){		
