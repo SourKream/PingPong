@@ -7,8 +7,9 @@ public class AIPlayer extends Player implements Runnable {
 	// Sleep time of the thread for AI player. Sets difficulty of AI Player.
 	public static int SleepTime = 20;
 
-	public AIPlayer(int num, Board b){
+	public AIPlayer(int num, Board b, int lives){
 		super(num);					
+		setLives(lives);
 		board = b;
 	}
 	

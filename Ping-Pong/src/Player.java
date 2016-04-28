@@ -6,7 +6,7 @@ public class Player implements Commons{
 	public int networkPacketNumber;
 	
 	public Paddle paddle;
-	private int lives;
+	private int lives = 0;
 	public boolean hasBigPaddle = false;
 	public int bigPaddleTimeCounter = 0;
 	public boolean hasShield = false;
