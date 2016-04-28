@@ -381,8 +381,7 @@ public class NetworkHandler
 		//System.out.println(update);
 		int curPlayerNo   = Integer.parseInt(data[1]);	// 0, 1, 2...
 		
-		int index = (curPlayerNo <= myPlayerNo) ? curPlayerNo : curPlayerNo-1;				
-		lastReceived[index] = System.currentTimeMillis();
+		lastReceived[curPlayerNo] = System.currentTimeMillis();
 		
 		//System.out.println(curPlayerNo);
 	}
@@ -397,30 +396,35 @@ public class NetworkHandler
 			boolean startAIs = true;
 			boolean[] dropped = new boolean[totalPlayers];
 			Arrays.fill(dropped,false);
+			//System.out.println("---------------------");
+			//System.out.println("curTime : " + curTime);
+			
 			
 			for (int i = 0 ; i < totalPlayers ; i++)
 				if (i != myPlayerNo)
 				{
+					//System.out.println("i : " + i);
+					//System.out.println("lastRec[i] : " + lastReceived[i]);
+					
 					//System.out.println(board.players[curPlayerNo+1].isAlive());
 					if ((curTime - startTime > 5000)  && isInGame[i] && (curTime - lastReceived[i] > 3000) && !hostingAI[i])
 					{						
 						//isInGame[i] = false;
-						System.out.println("Player Dropped : " + Integer.toString(i));
+						//System.out.println("Player Dropped : " + Integer.toString(i));
 						dropped[i] = true;
 					}
 					
 					else if (i < myPlayerNo) startAIs = false;
 						
 				}
-				
-				if (startAIs)
-					for (int i = 0 ; i<totalPlayers ; i++)
-						if (dropped[i])
-						{
-							board.startAIPlayer(i);
-							hostingAI[i] = true;
-						}
-				
+			//System.out.println("---------------------");	
+			if (startAIs)
+				for (int i = 0 ; i<totalPlayers ; i++)
+					if (dropped[i])
+					{
+						board.startAIPlayer(i);
+						hostingAI[i] = true;
+					}			
 			
 		}
     }
@@ -450,6 +454,7 @@ public class NetworkHandler
 		updateThread.start();
 		
 		int aiPlayersOnBoard = (isHost) ? aiPlayers : 0;
+		System.out.println("AIs on board : " + aiPlayersOnBoard);
         board.startGame(aiPlayersOnBoard);
 	}
 	

@@ -2,8 +2,8 @@ import java.awt.Graphics2D;
 
 public class Player implements Commons{
 	
-	private int networkPlayerNumber = -1;
-	public int networkPacketNumber = 0;
+	private int networkPlayerNumber;
+	public int networkPacketNumber;
 	
 	public Paddle paddle;
 	private int lives;
@@ -19,6 +19,7 @@ public class Player implements Commons{
 	public Player(int num){
 		
 		playerNumber = num;
+		networkPacketNumber = 0;
 		lives = INIT_LIVES;
 		switch(num){
 		case 1: paddle = new Paddle(0, WIDTH/2, BOTTOM_EDGE - 10, playerNumber);

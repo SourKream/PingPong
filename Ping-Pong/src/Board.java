@@ -3,6 +3,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.Point;
@@ -14,6 +15,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,7 +26,7 @@ public class Board extends JPanel implements Commons {
     private int timeCount;
     private String message = "Game Over";
     public Ball ball;
-	public Player players[];
+	private Player players[];
     public List<Integer> PlayersInMyControl = new ArrayList<>();
     private int numPlayers = 1;
     private Corners corner[];
@@ -31,7 +34,7 @@ public class Board extends JPanel implements Commons {
     private PowerUp powerUps[];
     private int lastPlayerToHitTheBall;
     private int hostPlayer;
-	
+    private Image shields[];
 	private NetworkHandler nwh;
     
     public Board (int players) {
@@ -57,6 +60,13 @@ public class Board extends JPanel implements Commons {
         corner[2] = new Corners(Commons.CORNER_3_X, Commons.CORNER_3_Y);
         corner[3] = new Corners(Commons.CORNER_4_X, Commons.CORNER_4_Y);
         
+        shields = new Image[2];
+        ImageIcon ii;
+        ii = new ImageIcon("../res/ShieldH.png");
+        shields[0] = ii.getImage();
+        ii = new ImageIcon("../res/ShieldV.png");
+        shields[1] = ii.getImage();
+                
         setDoubleBuffered(true);
         timer = new Timer();
     }
@@ -88,7 +98,9 @@ public class Board extends JPanel implements Commons {
         		players[i].kill();    		
     	} else if (numPlayers == 2){
     		players[0].setNetworkPlayerNumber(nwh.myPlayerNo);
+    		System.out.println("ID: " + players[0].getNetworkPlayerNumber());
     		players[2].setNetworkPlayerNumber((nwh.myPlayerNo + 1)%2);
+    		System.out.println("ID: " + players[2].getNetworkPlayerNumber());
     		players[1].kill();
     		players[3].kill();
     	} else if (numPlayers == 3){
@@ -180,7 +192,9 @@ public class Board extends JPanel implements Commons {
 
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
-        
+
+        drawShields(g2d);
+                
         drawCorners(g2d);
 
         if (ingame) {
@@ -242,6 +256,10 @@ public class Board extends JPanel implements Commons {
 
         g2d.setColor(Color.BLACK);
         g2d.setFont(font);
+        
+        if (players[0].isAlive())
+        	message = "You Win !!!";
+        
         g2d.drawString(message,
                 (Commons.WIDTH - metr.stringWidth(message)) / 2,
                 Commons.WIDTH / 2);
@@ -284,25 +302,10 @@ public class Board extends JPanel implements Commons {
     
     private boolean ballInMyArea(Ball ball){
     	
-    	float x = ball.getX();
-    	float y = ball.getY();
-    	
-    	if (y < Commons.HEIGHT/2)
-    		return false;
-    	
-    	if (x < Commons.WIDTH/2){
-    		if (players[1].isAlive()){
-    			if (y < Commons.HEIGHT - x)
-    				return false;
-    		}    		
-    	} else {
-    		if (players[3].isAlive()){
-    			if (y < x)
-    				return false;    			
-    		}
-    	}
-    	
-    	return true;
+    	for (int i=0; i<PlayersInMyControl.size(); i++)
+	    	if (Physics.testIntersection(players[i].paddle.getVibeRectangle(), ball.getCircle()))
+	    		return true;
+    	return false;
     }
     
     private void checkShowTimeForPowerUps(){
@@ -334,9 +337,11 @@ public class Board extends JPanel implements Commons {
     
     private void checkCollision() {
 
-        if (!players[0].isAlive()) {
+        if (!players[0].isAlive())
             stopGame();
-        }
+        
+        if (!(players[1].isAlive() || players[2].isAlive() || players[3].isAlive()))
+        	stopGame();
         
         // Collision of Ball with Paddle
         for (int i=0; i<players.length; i++)
@@ -421,6 +426,7 @@ public class Board extends JPanel implements Commons {
     }
     
     public void updateStateFromNetwork (String inputString){
+		System.out.println("Message: " + inputString);
 
     	String data[] = inputString.split(",");
     	String opCode = data[0];
@@ -431,7 +437,7 @@ public class Board extends JPanel implements Commons {
 					int packetNumber = Integer.parseInt(data[2]);
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
-						float position = Float.parseFloat(data[3]);
+						float position = Float.valueOf(data[3]);
 						players[i].setPaddlePosition(position);
 					}					
 				}
@@ -442,12 +448,11 @@ public class Board extends JPanel implements Commons {
 					int packetNumber = Integer.parseInt(data[2].trim());
 					if (packetNumber > players[i].networkPacketNumber){
 						players[i].networkPacketNumber = packetNumber;
-						float x = Float.parseFloat(data[3]);
-						float y = Float.parseFloat(data[4]);
-						float dx = Float.parseFloat(data[5]);
-						float dy = Float.parseFloat(data[6]);
+						float x = Float.valueOf(data[3]);
+						float y = Float.valueOf(data[4]);
+						float dx = Float.valueOf(data[5]);
+						float dy = Float.valueOf(data[6]);
 						players[i].setBallPosition(ball, x, y, dx, dy);
-						repaint();
 					}
 				}
     	} else if (opCode.equals("c")) {
@@ -510,29 +515,29 @@ public class Board extends JPanel implements Commons {
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Float.toString(players[playerNumber].paddle.getPosition()).concat(",");
+	    	data += Integer.toString(players[playerNumber].paddle.getPosition());
     	} else if (packetType == 2) {
     		
 	    	data += "b,";
 	    	data += Integer.toString(players[0].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[0].networkPacketNumber).concat(",");
 	    	players[0].networkPacketNumber += 1;
-	    	data += Float.toString(ball.getX()).concat(",");
-	    	data += Float.toString(ball.getY()).concat(",");
-	    	data += Float.toString(ball.getXDir()).concat(",");
-	    	data += Float.toString(ball.getYDir()).concat(",");
+	    	data += String.format( "%.2f", ball.getX()).concat(",");
+	    	data += String.format( "%.2f", ball.getY()).concat(",");
+	    	data += String.format( "%.2f", ball.getXDir()).concat(",");
+	    	data += String.format( "%.2f", ball.getYDir());
     	} else if (packetType == 3) {
     		
 	    	data += "c,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
 	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
 	    	players[playerNumber].networkPacketNumber += 1;
-	    	data += Integer.toString(players[playerNumber].lives()).concat(",");
+	    	data += Integer.toString(players[playerNumber].lives());
     	} else if (packetType == 5) {
     		
 	    	data += "e,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
-	    	data += Integer.toString(players[playerNumber].networkPacketNumber).concat(",");
+	    	data += Integer.toString(players[playerNumber].networkPacketNumber);
 	    	players[playerNumber].networkPacketNumber += 1;
     	} 
 
@@ -553,7 +558,7 @@ public class Board extends JPanel implements Commons {
             data += Integer.toString(powerUps[powerUpNum].powerUpType).concat(",");
             data += Integer.toString((int)powerUps[powerUpNum].getX()).concat(",");
             data += Integer.toString((int)powerUps[powerUpNum].getY()).concat(",");
-            data += Integer.toString(powerUps[powerUpNum].showTime).concat(",");
+            data += Integer.toString(powerUps[powerUpNum].showTime);
         } else if (packetType == 6) {
     		
 	    	data += "f,";
@@ -563,5 +568,21 @@ public class Board extends JPanel implements Commons {
 	    	data += Integer.toString(powerUpNum);
     	}
     	return data;
+    }
+    
+    private void drawShields(Graphics2D g2d){
+    	
+       	if (players[0].hasShield)
+       		g2d.drawImage(shields[0], 0,Commons.HEIGHT-30, 
+       					shields[0].getWidth(null), shields[0].getHeight(null), this);
+       	if (players[2].hasShield)
+       		g2d.drawImage(shields[0], 0,10, 
+       					shields[0].getWidth(null), shields[0].getHeight(null), this);
+       	if (players[1].hasShield)
+       		g2d.drawImage(shields[1], 10,0, 
+       					shields[1].getWidth(null), shields[1].getHeight(null), this);
+       	if (players[3].hasShield)
+       		g2d.drawImage(shields[1], Commons.WIDTH-30,0, 
+       					shields[1].getWidth(null), shields[1].getHeight(null), this);
     }
 }
