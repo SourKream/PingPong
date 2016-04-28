@@ -78,6 +78,9 @@ public class Board extends JPanel implements Commons {
 		int id = getPlayerByNetworkID(networkID);
 		players[id] = new AIPlayer(id+1, this);
 		players[id].setNetworkPlayerNumber(networkID);
+		
+		System.out.println("SETTING AI NETOWRK ID To : "+ Integer.toString(players[id].getNetworkPlayerNumber()));
+		
 		((AIPlayer) players[id]).startPlaying();
 	}
 	
@@ -298,7 +301,7 @@ public class Board extends JPanel implements Commons {
         		balls.get(i).move();
             for (int i=0; i<PlayersInMyControl.size(); i++){
             	players[PlayersInMyControl.get(i)].paddle.move();
-            	nwh.sendStateInfo(updateStateOnNetwork(1,i));
+            	nwh.sendStateInfo(updateStateOnNetwork(1,PlayersInMyControl.get(i)));
             }
             checkCollision();
             checkPaddle();
@@ -316,7 +319,7 @@ public class Board extends JPanel implements Commons {
     private boolean ballInMyArea(Ball ball){
     	
     	for (int i=0; i<PlayersInMyControl.size(); i++)
-	    	if (Physics.testIntersection(players[i].paddle.getVibeRectangle(), ball.getCircle()))
+	    	if (Physics.testIntersection(players[PlayersInMyControl.get(i)].paddle.getVibeRectangle(), ball.getCircle()))
 	    		return true;
     	return false;
     }
@@ -543,6 +546,8 @@ public class Board extends JPanel implements Commons {
     	String data = "";
     	
     	if (packetType == 1){
+    		
+System.out.println("Sending data for player num: " + Integer.toString(playerNumber) + " with network num: "+ Integer.toString(players[playerNumber].getNetworkPlayerNumber()));
     	
 	    	data += "a,";
 	    	data += Integer.toString(players[playerNumber].getNetworkPlayerNumber()).concat(",");
