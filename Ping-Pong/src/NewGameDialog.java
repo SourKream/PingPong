@@ -57,6 +57,7 @@ class NewGameDialog {
         dialog.setTitle("PING PONG");
         dialog.setSize(200, 200);
         dialog.setLocationRelativeTo(null);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setVisible(true);
     }
     

@@ -6,7 +6,8 @@ public class Player implements Commons{
 	public int networkPacketNumber;
 	
 	public Paddle paddle;
-	private int lives = 0;
+	public Heart heart;
+	private int lives;
 	public boolean hasBigPaddle = false;
 	public int bigPaddleTimeCounter = 0;
 	public boolean hasShield = false;
@@ -36,11 +37,23 @@ public class Player implements Commons{
 		case 4: paddle = new Paddle(1, WIDTH - 10 - BORDER, HEIGHT/2, playerNumber);
 				break;
 		}
+		
+		switch(num){
+		case 1: heart = new Heart(WIDTH + 20, HEIGHT/4 + 22, playerNumber);
+				break;
+		case 2: heart = new Heart(WIDTH + 20, HEIGHT/4 + 22 + 40, playerNumber);
+				break;
+		case 3: heart = new Heart(WIDTH + 20, HEIGHT/4 + 22 +80, playerNumber);
+				break;
+		case 4: heart = new Heart(WIDTH + 20, HEIGHT/4 + 22 + 120, playerNumber);
+				break;
+		}
 	}
 	
 	public void setNetworkPlayerNumber(int num){
 		networkPlayerNumber = num;
 		paddle.setColor(num+1);
+		heart.setColor(num+1);
 	}
 
 	public int getNetworkPlayerNumber(){
