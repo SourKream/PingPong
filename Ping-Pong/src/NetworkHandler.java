@@ -254,7 +254,10 @@ public class NetworkHandler
 				DatagramPacket packet = new DatagramPacket(buf, buf.length);
 				skt_in.receive(packet);	
 				String strt = new String(packet.getData());
-				if (strt=="start")
+				
+				//System.out.println("to Start: " + strt);
+				
+				if (strt.trim().equals("start"))
 					toStart = true;
 			}
 			catch (Exception e) {System.err.println("Client: Couldn't receive start signal");System.exit(0);}
@@ -372,8 +375,11 @@ public class NetworkHandler
 						String update = new String(packet.getData());
 						
 						//System.out.println("received a packet");
-						System.out.println("received: " + update);
+						//System.out.println("received: " + update);
 						// call board update functions
+						
+						if (update.trim().equals("start")) continue;
+						
 						board.updateStateFromNetwork(update);
 						
 						updateTimeStamp(update);
