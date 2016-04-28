@@ -141,7 +141,10 @@ public class Board extends JPanel implements Commons {
 				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
 				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
 				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
-				nwh.sendStateInfo(updateStateOnNetwork(2,0,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
+				nwh.sendStateInfo(updateStateOnNetwork(2,1,i));
 			}
 
 		// Send Power Up Info
@@ -247,14 +250,14 @@ public class Board extends JPanel implements Commons {
 
         g2d.setColor(Color.BLACK);
         g2d.setFont(font);
-        g2d.drawString("Balls: " + Integer.toString(balls.size()),
-				        Commons.WIDTH - 100 - metr.stringWidth(message),
-				        30);    	
+//        g2d.drawString("Balls: " + Integer.toString(balls.size()),/
+//				        Commons.WIDTH - 100 - metr.stringWidth(message),
+//				        30);    	
 //	    for (int i=0; i<4; i++)
 //	    	if (players[i].isAlive())
-//		        g2d.drawString("Lives P" + Integer.toString(i+1) + ": " + Integer.toString(players[i].lives()),
-//		                Commons.WIDTH - 100 - metr.stringWidth(message),
-//		                30+20*i);    	
+		        g2d.drawString("Lives P" + Integer.toString(0+1) + ": " + Integer.toString(players[0].lives()),
+		                Commons.WIDTH - 100 - metr.stringWidth(message),
+		                30);    	
     }
     
     private void gameFinished(Graphics2D g2d) {
@@ -416,9 +419,11 @@ public class Board extends JPanel implements Commons {
     	case 1: players[index].extraLife();
     			nwh.sendStateInfo(updateStateOnNetwork(3,index));
     			break;
-    	case 2: if (PlayersInMyControl.contains(index))
+    	case 2: if (PlayersInMyControl.contains(index)){
     				balls.add(new Ball());
     				nwh.sendStateInfo(updateStateOnNetwork(7,index));
+    				nwh.sendStateInfo(updateStateOnNetwork(2,index,balls.size()-1));
+    			}
     			break;
     	case 3: players[index].hasShield = true;
 				players[index].shieldTimeCounter = 0;
