@@ -7,7 +7,10 @@ public class Corners implements Commons {
 	public float slope; 
 
     public Corners(int [] x, int [] y) {
-    	 poly = new Polygon(x, y, 3);
+    	if(x.length == 3)
+    		poly = new Polygon(x, y, 3);
+    	else
+    		poly = new Polygon(x, y, 4);
     }
     
     Polygon getCorner()

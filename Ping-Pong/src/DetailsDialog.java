@@ -52,7 +52,8 @@ class DetailsDialog {
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
         	
-        	if(Integer.valueOf((String) combo_1.getSelectedItem()) + Integer.valueOf((String) combo_2.getSelectedItem())<=4)
+        	int Players = Integer.valueOf((String) combo_1.getSelectedItem()) + Integer.valueOf((String) combo_2.getSelectedItem());
+        	if(Players < 4 && Players !=1)
         	{ 
         		int humanPlayer = Integer.valueOf((String) combo_1.getSelectedItem());
         		
@@ -61,8 +62,9 @@ class DetailsDialog {
 	        		args[0] = "0";
 	        		args[1] = Integer.toString(humanPlayer-1);
 	        		args[2] = (String) combo_2.getSelectedItem();
+	        		args[3] = (String) combo_3.getSelectedItem();
 
-	        		System.out.println("Input:"+args[0]+args[1]+args[2]);
+	        		System.out.println("Input:"+args[0]+args[1]+args[2]+args[3]);
 	        	}
 	        	else
 	        	{
@@ -78,9 +80,18 @@ class DetailsDialog {
         	else 
         	{
         		System.out.println("Error!");
-        		ToastMessage toastMessage = new DetailsDialog().new ToastMessage("Error: MAX 4 Player Allowed!",5000);
-        		toastMessage.setVisible(true);
-        		display(i);
+        		if(Players > 4)
+        		{
+        			ToastMessage toastMessage = new DetailsDialog().new ToastMessage("Error: MAX 4 Player Allowed!",5000);
+        			toastMessage.setVisible(true);
+        			display(i);
+        		}
+        		if(Players == 1)
+        		{
+        			ToastMessage toastMessage = new DetailsDialog().new ToastMessage("Error: ATLEAST 2 Player!",5000);
+        			toastMessage.setVisible(true);
+        			display(i);
+        		}
         	}
         } else {
             System.out.println("Cancelled");

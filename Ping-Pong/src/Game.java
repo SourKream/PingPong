@@ -9,16 +9,17 @@ public class Game extends JFrame {
 
 	private Board board;
 	
-	public Game(int i, String[] hostAddress_or_connPlayers_and_aiPlayers){
-		initUI(i, hostAddress_or_connPlayers_and_aiPlayers);
+	public Game(int i, String[] argsIn){
+		initUI(i, argsIn);
 	}
     
-    private void initUI(int i, String[] hostAddress_or_connPlayers_and_aiPlayers) {
+    private void initUI(int i, String[] argsIn) {
 		
 		if (i==0){	// if host
-	    board = new Board (Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[1]) + Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[2]) + 1);
+	    board = new Board (Integer.parseInt(argsIn[1]) + Integer.parseInt(argsIn[2]) + 1);
 		}
 		else{	// if client
+			System.out.println("Client!!!!");
 		board = new Board (0);	// don't know now, will set later
 		}
 		
@@ -36,7 +37,7 @@ public class Game extends JFrame {
         
         if(OsUtils.isLinux())
         {
-        	setSize(Commons.WIDTH, Commons.HEIGHT);
+        	setSize(Commons.WIDTH + 100, Commons.HEIGHT);
         }
         if(OsUtils.isMac())
         	setSize(Commons.WIDTH, Commons.HEIGHT + 22);
@@ -45,10 +46,11 @@ public class Game extends JFrame {
         setResizable(false);
         setVisible(true);
 		if (i==0){	// host
-			NetworkHandler nwh = new NetworkHandler(board,Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[1]),Integer.parseInt(hostAddress_or_connPlayers_and_aiPlayers[2]));
+			NetworkHandler nwh = new NetworkHandler(board,Integer.parseInt(argsIn[1]),Integer.parseInt(argsIn[2]));
 		}		
 		else {	// client
-			NetworkHandler nwh = new NetworkHandler(board, hostAddress_or_connPlayers_and_aiPlayers[1], 1231);
+			System.out.println("Add:"+argsIn[1]);
+			NetworkHandler nwh = new NetworkHandler(board, argsIn[1], 1231);
 		}
 		
     }
@@ -73,7 +75,6 @@ public class Game extends JFrame {
 
     public static void main(final String[] args) {
         
-        final String[] x = {"0", "0", "1", "10.192.52.174"};
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() { 	
