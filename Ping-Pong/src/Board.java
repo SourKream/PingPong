@@ -256,18 +256,18 @@ public class Board extends JPanel implements Commons {
         g2d.setColor(Color.BLACK);
         g2d.setFont(font);
         
- //Player Lives Status
-	   for (int i=0; i<4; i++)
-	   {
-		   if (players[i].isAlive())
-		   {
-	    		g2d.drawImage(players[i].heart.getImage(), 
-	            		(int)players[i].heart.getX(),(int)players[i].heart.getY(),
-	            		players[i].heart.getWidth(), players[i].heart.getHeight(), this);
-		   		g2d.drawString(Integer.toString(players[i].lives()), (int)players[i].heart.getX() + 35, (int)players[i].heart.getY()+17);
-	  
-		   }
-	   }
+        g2d.drawString("Balls: " + Integer.toString(balls.size()),
+				        Commons.WIDTH + 115 - metr.stringWidth(message),
+				        50); 
+        g2d.drawString("Lives:",
+                Commons.WIDTH + 115 - metr.stringWidth(message),
+                60+20*(1));  
+        
+	    for (int i=0; i<4; i++)
+	    	if (players[i].isAlive())
+		        g2d.drawString("P" + Integer.toString(i+1) + ": " + Integer.toString(players[i].lives()),
+		                Commons.WIDTH + 115 - metr.stringWidth(message),
+		                60+30*(i+2));    	
 
     }
     
