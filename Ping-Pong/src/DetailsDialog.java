@@ -52,7 +52,8 @@ class DetailsDialog {
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
         	
-        	int Players = Integer.valueOf((String) combo_1.getSelectedItem()) + Integer.valueOf((String) combo_2.getSelectedItem());
+        	if(NewGameDialog.isHost())
+        	{int Players = Integer.valueOf((String) combo_1.getSelectedItem()) + Integer.valueOf((String) combo_2.getSelectedItem());
         	if(Players <= 4 && Players !=1)
         	{ 
         		int humanPlayer = Integer.valueOf((String) combo_1.getSelectedItem());
@@ -96,6 +97,16 @@ class DetailsDialog {
 		        		}
         		}
 	        	}
+        	}
+        	else
+        	{
+        		args[0] = "1";
+        		args[1] =  host_ip.getText();
+        		args[1] = args[1].trim();
+        		
+        		Game game = new Game(Integer.parseInt(args[0]), args);
+	            game.setVisible(true);
+        	}
         } else {
             System.out.println("Cancelled");
         }
