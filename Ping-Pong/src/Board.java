@@ -407,7 +407,7 @@ public class Board extends JPanel implements Commons {
     // TODO: Application of PowerUp to the correct player
     // TODO: PowerUp Applied data packet
     private void ApplyPowerUpToPlayer (PowerUp powerUp, int index){
-    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(players[index].playerNumber));
+//    	System.out.println("Power Up: "+ powerUp.description + " to Player: "+ Integer.toString(players[index].playerNumber));
     	
     	switch(powerUp.powerUpType){
     	case 0: players[index].setBigPaddle();
