@@ -53,6 +53,11 @@ public class Game extends JFrame {
 			NetworkHandler nwh = new NetworkHandler(board, argsIn[1], 1231);
 		}
 		
+		if (argsIn[3].equals("Low"))
+			AIPlayer.SleepTime = 500;
+		else if (argsIn[3].equals("Medium"))
+			AIPlayer.SleepTime = 200;
+		
     }
     
     public static final class OsUtils
