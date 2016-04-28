@@ -35,6 +35,7 @@ public class Board extends JPanel implements Commons {
     private int hostPlayer;
     private Image shields[];
 	private NetworkHandler nwh;
+	private Corners rightBorder;
     
     public Board (int players) {
 
@@ -58,6 +59,8 @@ public class Board extends JPanel implements Commons {
         corner[1] = new Corners(Commons.CORNER_2_X, Commons.CORNER_2_Y);
         corner[2] = new Corners(Commons.CORNER_3_X, Commons.CORNER_3_Y);
         corner[3] = new Corners(Commons.CORNER_4_X, Commons.CORNER_4_Y);
+        
+        rightBorder = new Corners(Commons.BORDER_1_X, Commons.BORDER_1_Y);
         
         shields = new Image[2];
         ImageIcon ii;
@@ -241,6 +244,9 @@ public class Board extends JPanel implements Commons {
         	g2d.setColor(Commons.CornerColor);
         	g2d.fill(corner[i].getCorner());
         }
+        
+        g2d.setColor(Commons.BorderColor);
+    	g2d.fill(rightBorder.getCorner());
     }
     
     private void showLives(Graphics2D g2d){
@@ -250,14 +256,20 @@ public class Board extends JPanel implements Commons {
 
         g2d.setColor(Color.BLACK);
         g2d.setFont(font);
-//        g2d.drawString("Balls: " + Integer.toString(balls.size()),/
-//				        Commons.WIDTH - 100 - metr.stringWidth(message),
-//				        30);    	
-//	    for (int i=0; i<4; i++)
-//	    	if (players[i].isAlive())
-		        g2d.drawString("Lives P" + Integer.toString(0+1) + ": " + Integer.toString(players[0].lives()),
-		                Commons.WIDTH - 100 - metr.stringWidth(message),
-		                30);    	
+        
+        g2d.drawString("Balls: " + Integer.toString(balls.size()),
+				        Commons.WIDTH + 115 - metr.stringWidth(message),
+				        50); 
+        g2d.drawString("Lives:",
+                Commons.WIDTH + 115 - metr.stringWidth(message),
+                60+20*(1));  
+        
+	    for (int i=0; i<4; i++)
+	    	if (players[i].isAlive())
+		        g2d.drawString("P" + Integer.toString(i+1) + ": " + Integer.toString(players[i].lives()),
+		                Commons.WIDTH + 115 - metr.stringWidth(message),
+		                60+30*(i+2));    	
+
     }
     
     private void gameFinished(Graphics2D g2d) {

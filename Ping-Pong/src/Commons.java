@@ -32,4 +32,7 @@ public interface Commons {
     public static final int[] CORNER_2_Y = {BORDER, BORDER, BORDER+SIZE};
     public static final int[] CORNER_3_Y = {HEIGHT-BORDER-SIZE, HEIGHT-BORDER, HEIGHT-BORDER};
     public static final int[] CORNER_4_Y = {HEIGHT-BORDER-SIZE, HEIGHT-BORDER, HEIGHT-BORDER};
+    public static final int[] BORDER_1_X = {WIDTH-BORDER, WIDTH, WIDTH, WIDTH-BORDER};
+    public static final int[] BORDER_1_Y = {0, 0, HEIGHT+22, HEIGHT+22};
+    
 }
